@@ -99,6 +99,7 @@ export default function EmployeeDetailPage() {
         <Button
           variant="ghost"
           size="icon"
+          nativeButton={false}
           render={<Link href="/employees" />}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -116,6 +117,7 @@ export default function EmployeeDetailPage() {
         </div>
         <Button
           variant="outline"
+          nativeButton={false}
           render={<Link href={`/employees/${employee.id}/edit`} />}
         >
           <Pencil className="h-4 w-4 mr-2" />
@@ -198,59 +200,49 @@ export default function EmployeeDetailPage() {
               </CardContent>
             </Card>
           ) : (
-            salaries.map((salary) => (
-              <Card key={salary.id}>
-                <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-base">
-                      {format(salary.effectiveFrom.toDate(), "PPP")}
-                    </CardTitle>
-                    {salary.isActive && <BadgeCheck className="h-4 w-4 text-green-600" />}
-                  </div>
-                  {salary.isActive && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeactivateSalary(salary.id)}
-                    >
-                      Deactivate
-                    </Button>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <p className="text-sm text-zinc-500">Basic Pay</p>
-                      <p className="font-medium">₹{salary.basicPay.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-zinc-500">HRA</p>
-                      <p className="font-medium">₹{salary.hra.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-zinc-500">DA</p>
-                      <p className="font-medium">₹{salary.da.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-zinc-500">Gross Salary</p>
-                      <p className="font-medium">₹{salary.grossSalary.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-zinc-500">Deductions</p>
-                      <p className="font-medium">
-                        ₹{salary.deductions.reduce((s, d) => s + d.amount, 0).toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-zinc-500">Net Salary</p>
-                      <p className="font-medium text-green-600">₹{salary.netSalary.toLocaleString()}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead className="py-3">Effective From</TableHead>
+                      <TableHead className="py-3">Basic</TableHead>
+                      <TableHead className="py-3">HRA</TableHead>
+                      <TableHead className="py-3">Gross /mo</TableHead>
+                      <TableHead className="py-3">Deductions /mo</TableHead>
+                      <TableHead className="py-3">Net /mo</TableHead>
+                      <TableHead className="py-3"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {salaries.map((salary) => (
+                      <TableRow key={salary.id}>
+                        <TableCell className="py-3">
+                          <div className="flex items-center gap-2">
+                            {format(salary.effectiveFrom.toDate(), "PP")}
+                            {salary.isActive && <BadgeCheck className="h-4 w-4 text-green-600" />}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-3">₹{salary.basicPay.toLocaleString()}</TableCell>
+                        <TableCell className="py-3">₹{salary.hra.toLocaleString()}</TableCell>
+                        <TableCell className="py-3">₹{salary.grossEarnings.toLocaleString()}</TableCell>
+                        <TableCell className="py-3 text-red-600">₹{salary.totalDeductions.toLocaleString()}</TableCell>
+                        <TableCell className="py-3 text-green-600 font-medium">₹{salary.netSalary.toLocaleString()}</TableCell>
+                        <TableCell className="py-3">
+                          {salary.isActive && (
+                            <Button variant="ghost" size="sm" onClick={() => handleDeactivateSalary(salary.id)}>
+                              Deactivate
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           )}
-          <Button render={<Link href={`/salary?employeeId=${employee.id}`} />}>
+          <Button nativeButton={false} render={<Link href={`/salary?employeeId=${employee.id}`} />}>
             Add Salary Structure
           </Button>
         </TabsContent>
@@ -260,10 +252,10 @@ export default function EmployeeDetailPage() {
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Generated</TableHead>
-                    <TableHead></TableHead>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="py-3">Type</TableHead>
+                    <TableHead className="py-3">Generated</TableHead>
+                    <TableHead className="py-3"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -276,7 +268,7 @@ export default function EmployeeDetailPage() {
                   ) : (
                     documents.map((doc) => (
                       <TableRow key={doc.id}>
-                        <TableCell>{DOCUMENT_TYPE_LABELS[doc.type] || doc.type}</TableCell>
+                        <TableCell>{doc.type}</TableCell>
                         <TableCell className="text-zinc-500">
                           {format(doc.generatedAt.toDate(), "PPP")}
                         </TableCell>
@@ -284,7 +276,8 @@ export default function EmployeeDetailPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            render={<a href={doc.pdfUrl} target="_blank" rel="noopener noreferrer" />}
+                            nativeButton={false}
+                            render={<a href={`/api/download-document?url=${encodeURIComponent(doc.pdfUrl)}&name=${encodeURIComponent(`${doc.type}.pdf`)}`} />}
                           >
                             Download
                           </Button>
@@ -303,11 +296,11 @@ export default function EmployeeDetailPage() {
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>File</TableHead>
-                    <TableHead>Uploaded</TableHead>
-                    <TableHead></TableHead>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="py-3">Type</TableHead>
+                    <TableHead className="py-3">File</TableHead>
+                    <TableHead className="py-3">Uploaded</TableHead>
+                    <TableHead className="py-3"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -320,7 +313,7 @@ export default function EmployeeDetailPage() {
                   ) : (
                     uploads.map((upload) => (
                       <TableRow key={upload.id}>
-                        <TableCell>{DOCUMENT_TYPE_LABELS[upload.type as keyof typeof DOCUMENT_TYPE_LABELS] || upload.type}</TableCell>
+                        <TableCell>{DOCUMENT_TYPE_LABELS[upload.type]}</TableCell>
                         <TableCell className="text-zinc-500">{upload.originalFileName}</TableCell>
                         <TableCell className="text-zinc-500">
                           {format(upload.uploadedAt.toDate(), "PPP")}
@@ -329,9 +322,10 @@ export default function EmployeeDetailPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            render={<a href={upload.cloudinaryUrl} target="_blank" rel="noopener noreferrer" />}
+                            nativeButton={false}
+                            render={<a href={`/api/download-document?url=${encodeURIComponent(upload.cloudinaryUrl)}&name=${encodeURIComponent(upload.originalFileName)}`} />}
                           >
-                            View
+                            Download
                           </Button>
                         </TableCell>
                       </TableRow>

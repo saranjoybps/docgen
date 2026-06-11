@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Plus, Search, MoreHorizontal } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -15,14 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { getEmployees } from "@/services/employees"
+import { getEmployees, deleteEmployee } from "@/services/employees"
 import type { Employee } from "@/lib/types"
+import { toast } from "sonner"
 
 const statusColor: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   active: "default",
@@ -34,6 +29,7 @@ const statusColor: Record<string, "default" | "secondary" | "destructive" | "out
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [search, setSearch] = useState("")
+  const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
     getEmployees().then(setEmployees)
@@ -47,6 +43,21 @@ export default function EmployeesPage() {
       e.department.toLowerCase().includes(search.toLowerCase())
   )
 
+  const handleDelete = async (id: string) => {
+    if (deleting !== id) {
+      setDeleting(id)
+      return
+    }
+    try {
+      await deleteEmployee(id)
+      toast.success("Employee deleted")
+      setEmployees((prev) => prev.filter((e) => e.id !== id))
+    } catch {
+      toast.error("Failed to delete")
+    }
+    setDeleting(null)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -54,12 +65,10 @@ export default function EmployeesPage() {
           <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
           <p className="text-zinc-500 mt-1">{employees.length} total employees</p>
         </div>
-        <Link href="/employees/add">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Employee
-          </Button>
-        </Link>
+        <Button nativeButton={false} render={<Link href="/employees/add" />}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Employee
+        </Button>
       </div>
 
       <Card>
@@ -77,13 +86,13 @@ export default function EmployeesPage() {
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-16"></TableHead>
+              <TableRow className="bg-muted/50">
+                <TableHead className="py-3.5">Name</TableHead>
+                <TableHead className="py-3.5 hidden md:table-cell">Email</TableHead>
+                <TableHead className="py-3.5">Department</TableHead>
+                <TableHead className="py-3.5 hidden lg:table-cell">Designation</TableHead>
+                <TableHead className="py-3.5">Status</TableHead>
+                <TableHead className="w-28 py-3.5"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -95,7 +104,7 @@ export default function EmployeesPage() {
                 </TableRow>
               ) : (
                 filtered.map((employee) => (
-                  <TableRow key={employee.id}>
+                    <TableRow key={employee.id}>
                     <TableCell>
                       <Link
                         href={`/employees/${employee.id}`}
@@ -104,30 +113,30 @@ export default function EmployeesPage() {
                         {employee.firstName} {employee.lastName}
                       </Link>
                     </TableCell>
-                    <TableCell className="text-zinc-500">{employee.email}</TableCell>
-                    <TableCell>{employee.department}</TableCell>
-                    <TableCell>{employee.designation}</TableCell>
+                    <TableCell className="text-muted-foreground hidden md:table-cell">{employee.email}</TableCell>
+                    <TableCell className="text-muted-foreground">{employee.department}</TableCell>
+                    <TableCell className="text-muted-foreground hidden lg:table-cell">{employee.designation}</TableCell>
                     <TableCell>
                       <Badge variant={statusColor[employee.status] || "outline"}>
                         {employee.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem render={<Link href={`/employees/${employee.id}`} />}>
-                            View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem render={<Link href={`/employees/${employee.id}/edit`} />}>
-                            Edit
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href={`/employees/${employee.id}`} />}>
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href={`/employees/${employee.id}/edit`} />}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant={deleting === employee.id ? "destructive" : "ghost"}
+                          size="icon"
+                          onClick={() => handleDelete(employee.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

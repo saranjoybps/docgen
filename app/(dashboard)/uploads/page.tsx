@@ -1,17 +1,9 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import { useAuth } from "@/components/auth/auth-provider"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -20,28 +12,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
 import { getEmployees } from "@/services/employees"
-import { getUploadedDocuments, saveUploadedDocument } from "@/services/documents"
+import { getUploadedDocuments, deleteUploadedDocument } from "@/services/documents"
 import type { Employee, UploadedDocument, DocumentType } from "@/lib/types"
 import { DOCUMENT_TYPE_LABELS } from "@/lib/types"
 import { toast } from "sonner"
 import { format } from "date-fns"
-import { Upload, ExternalLink } from "lucide-react"
-import { CldUploadWidget } from "next-cloudinary"
+import { Plus, Download, Trash2, Search, FileText } from "lucide-react"
 
-const UPLOAD_TYPES = [
-  { value: "experience_letter", label: "Experience Letter" },
-  { value: "relieving_letter", label: "Relieving Letter" },
-  { value: "payslip", label: "Payslip" },
-  { value: "other", label: "Other" },
-]
+function getDownloadUrl(cloudinaryUrl: string, fileName: string) {
+  return `/api/download-document?url=${encodeURIComponent(cloudinaryUrl)}&name=${encodeURIComponent(fileName)}`
+}
 
 export default function UploadsPage() {
-  const { user } = useAuth()
   const [employees, setEmployees] = useState<Employee[]>([])
   const [uploads, setUploads] = useState<UploadedDocument[]>([])
-  const [selectedEmployee, setSelectedEmployee] = useState("")
-  const [selectedType, setSelectedType] = useState<string>("")
+  const [search, setSearch] = useState("")
+  const [deleting, setDeleting] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   const loadData = useCallback(async () => {
@@ -60,44 +48,38 @@ export default function UploadsPage() {
   }, [])
 
   useEffect(() => {
-    let mounted = true
-    loadData().then(() => {})
-    return () => { mounted = false }
-  }, [])
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUploadSuccess = async (result: any) => {
-    if (!selectedEmployee || !selectedType) {
-      toast.error("Please select an employee and document type")
-      return
-    }
-
-    try {
-      await saveUploadedDocument({
-        employeeId: selectedEmployee,
-        type: selectedType as DocumentType | "other",
-        originalFileName: result.info.original_filename + "." + result.info.format,
-        cloudinaryUrl: result.info.secure_url,
-        cloudinaryPublicId: result.info.public_id,
-        uploadedBy: user?.uid || "",
-      })
-
-      toast.success("Document uploaded successfully")
-      const uplds = await getUploadedDocuments()
-      setUploads(uplds)
-    } catch {
-      toast.error("Failed to save document record")
-    }
-  }
+    loadData()
+  }, [loadData])
 
   const getEmployeeName = (id: string) => {
     const emp = employees.find((e) => e.id === id)
     return emp ? `${emp.firstName} ${emp.lastName}` : "Unknown"
   }
 
-  const getTypeLabel = (type: string) => {
-    return DOCUMENT_TYPE_LABELS[type as DocumentType] || type
+  const handleDelete = async (id: string, cloudinaryPublicId: string) => {
+    if (deleting !== id) {
+      setDeleting(id)
+      return
+    }
+    try {
+      await fetch(`/api/delete-cloudinary-file?publicId=${encodeURIComponent(cloudinaryPublicId)}`, {
+        method: "DELETE",
+      })
+      await deleteUploadedDocument(id)
+      toast.success("Document deleted")
+      setUploads((prev) => prev.filter((u) => u.id !== id))
+    } catch {
+      toast.error("Failed to delete")
+    }
+    setDeleting(null)
   }
+
+  const filtered = uploads.filter(
+    (u) =>
+      getEmployeeName(u.employeeId).toLowerCase().includes(search.toLowerCase()) ||
+      DOCUMENT_TYPE_LABELS[u.type]?.toLowerCase().includes(search.toLowerCase()) ||
+      u.originalFileName.toLowerCase().includes(search.toLowerCase())
+  )
 
   if (loading) {
     return <div className="text-center py-12 text-zinc-500">Loading...</div>
@@ -105,124 +87,102 @@ export default function UploadsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Upload Documents</h1>
-        <p className="text-zinc-500 mt-1">
-          Upload existing documents for experienced employees
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Uploaded Documents</h1>
+          <p className="text-zinc-500 mt-1">{uploads.length} total documents</p>
+        </div>
+        <Button nativeButton={false} render={<Link href="/uploads/add" />}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Document
+        </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload New Document</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Employee</Label>
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              <Select value={selectedEmployee} onValueChange={(v: any) => { if (v) setSelectedEmployee(v); }}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select employee" />
-                </SelectTrigger>
-                <SelectContent>
-                  {employees.map((emp) => (
-                    <SelectItem key={emp.id} value={emp.id}>
-                      {emp.firstName} {emp.lastName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Document Type</Label>
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              <Select value={selectedType} onValueChange={(v: any) => { if (v) setSelectedType(v); }}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select document type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {UPLOAD_TYPES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>
-                      {t.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {selectedEmployee && selectedType && (
-              <CldUploadWidget
-                uploadPreset="documents_preset"
-                onSuccess={handleUploadSuccess}
-                options={{
-                  maxFiles: 1,
-                  resourceType: "raw",
-                  folder: "employee-documents",
-                }}
-              >
-                {({ open }) => (
-                  <Button onClick={() => open()} className="w-full">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Document
-                  </Button>
-                )}
-              </CldUploadWidget>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Uploads</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <Input
+              placeholder="Search by employee, type, or file name..."
+              className="pl-9"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="py-3.5">Employee</TableHead>
+                <TableHead className="py-3.5">Type</TableHead>
+                <TableHead className="py-3.5 hidden md:table-cell">File</TableHead>
+                <TableHead className="py-3.5 hidden lg:table-cell">Uploaded</TableHead>
+                <TableHead className="w-24 py-3.5"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
                 <TableRow>
-                  <TableHead>Employee</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Uploaded</TableHead>
-                  <TableHead></TableHead>
+                  <TableCell colSpan={5} className="text-center py-8 text-zinc-500">
+                    No documents found
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {uploads.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-zinc-500">
-                      No documents uploaded yet.
+              ) : (
+                filtered.map((upload) => (
+                  <TableRow key={upload.id}>
+                    <TableCell className="font-medium py-3.5">
+                      {getEmployeeName(upload.employeeId)}
+                    </TableCell>
+                    <TableCell className="py-3.5">
+                      {DOCUMENT_TYPE_LABELS[upload.type]}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground py-3.5 hidden md:table-cell">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 shrink-0" />
+                        <span className="truncate max-w-[200px]">{upload.originalFileName}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground py-3.5 hidden lg:table-cell">
+                      {format(upload.uploadedAt.toDate(), "PP")}
+                    </TableCell>
+                    <TableCell className="py-3.5">
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          nativeButton={false}
+                          render={<a href={getDownloadUrl(upload.cloudinaryUrl, upload.originalFileName)} />}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          nativeButton={false}
+                          render={<Link href={`/uploads/${upload.id}/edit`} />}
+                        >
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                            <path d="m15 5 4 4" />
+                          </svg>
+                        </Button>
+                        <Button
+                          variant={deleting === upload.id ? "destructive" : "ghost"}
+                          size="icon"
+                          onClick={() => handleDelete(upload.id, upload.cloudinaryPublicId)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  uploads.slice(0, 10).map((upload) => (
-                    <TableRow key={upload.id}>
-                      <TableCell className="font-medium">
-                        {getEmployeeName(upload.employeeId)}
-                      </TableCell>
-                      <TableCell>{getTypeLabel(upload.type)}</TableCell>
-                      <TableCell className="text-zinc-500">
-                        {format(upload.uploadedAt.toDate(), "PP")}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            render={<a href={upload.cloudinaryUrl} target="_blank" rel="noopener noreferrer" />}
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -76,7 +76,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Company Settings</h1>
         <p className="text-zinc-500 mt-1">Configure your company details for document generation</p>
@@ -107,7 +107,6 @@ export default function SettingsPage() {
                 )}
                 <CldUploadWidget
                   uploadPreset="documents_preset"
-                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                    onSuccess={(result: any) => {
                     setLogoUrl(result.info.secure_url)
                     setLogoPublicId(result.info.public_id)

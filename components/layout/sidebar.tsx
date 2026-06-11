@@ -50,7 +50,7 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 text-zinc-100 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto",
+          "fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 text-zinc-100 transform transition-transform duration-200 ease-in-out lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >

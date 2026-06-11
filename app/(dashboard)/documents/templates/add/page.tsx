@@ -1,38 +1,22 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getTemplate, updateTemplate } from "@/services/templates"
+import { addTemplate } from "@/services/templates"
 import { toast } from "sonner"
 import { ArrowLeft, Save } from "lucide-react"
 
-export default function EditTemplatePage() {
-  const params = useParams()
+export default function AddTemplatePage() {
   const router = useRouter()
   const [name, setName] = useState("")
   const [content, setContent] = useState("")
   const [saving, setSaving] = useState(false)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const id = params.id as string
-    getTemplate(id).then((t) => {
-      if (!t) {
-        toast.error("Template not found")
-        router.push("/documents/templates")
-        return
-      }
-      setName(t.name)
-      setContent(t.content)
-      setLoading(false)
-    })
-  }, [params.id, router])
 
   const variables = useMemo(() => {
     const matches = content.match(/\{(\w+)\}/g)
@@ -49,18 +33,14 @@ export default function EditTemplatePage() {
 
     setSaving(true)
     try {
-      await updateTemplate(params.id as string, { name: name.trim(), content: content.trim() })
-      toast.success("Template updated")
+      await addTemplate({ name: name.trim(), content: content.trim() })
+      toast.success("Template created")
       router.push("/documents/templates")
     } catch {
-      toast.error("Failed to update template")
+      toast.error("Failed to create template")
     } finally {
       setSaving(false)
     }
-  }
-
-  if (loading) {
-    return <div className="text-center py-12 text-zinc-500">Loading...</div>
   }
 
   return (
@@ -70,8 +50,8 @@ export default function EditTemplatePage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Edit Template</h1>
-          <p className="text-zinc-500 mt-1">{name}</p>
+          <h1 className="text-3xl font-bold tracking-tight">Add Template</h1>
+          <p className="text-zinc-500 mt-1">Create a new document template</p>
         </div>
       </div>
 
@@ -83,7 +63,12 @@ export default function EditTemplatePage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Template Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Offer Letter, Experience Letter"
+              />
             </div>
 
             <div className="space-y-2">
@@ -94,6 +79,7 @@ export default function EditTemplatePage() {
                 onChange={(e) => setContent(e.target.value)}
                 rows={20}
                 className="font-mono text-sm"
+                placeholder={`Date: {date}\n\nDear {employeeName},\n\n...`}
               />
             </div>
 
@@ -113,7 +99,7 @@ export default function EditTemplatePage() {
                   ))}
                 </div>
                 <p className="text-xs text-zinc-500">
-                  Variables are automatically detected from {'{variableName}'} patterns in your content.
+                  These variables will be replaced with actual values when generating documents.
                 </p>
               </div>
             )}
@@ -126,7 +112,7 @@ export default function EditTemplatePage() {
           </Button>
           <Button type="submit" disabled={saving}>
             <Save className="h-4 w-4 mr-2" />
-            {saving ? "Saving..." : "Save Template"}
+            {saving ? "Creating..." : "Create Template"}
           </Button>
         </div>
       </form>

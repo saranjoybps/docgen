@@ -5,9 +5,9 @@ import { AuthGuard } from "@/components/auth/auth-guard"
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>
-      <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <div className="flex h-screen bg-zinc-50 dark:bg-zinc-950">
         <Sidebar />
-        <main className="flex-1 ml-0 lg:ml-64 p-6 lg:p-8 pt-16 lg:pt-8">
+        <main className="flex-1 min-w-0 overflow-y-auto p-4 lg:p-6 lg:ml-64">
           {children}
         </main>
         <Toaster />
