@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { cloudinary } from "@/lib/cloudinary"
+import { Readable } from "stream"
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get("file") as File | null
-    const type = formData.get("type") as string || "Document"
-    const employeeName = formData.get("employeeName") as string || "Employee"
 
     if (!file) {
       return NextResponse.json({ error: "File is required" }, { status: 400 })
@@ -17,9 +16,8 @@ export async function POST(request: NextRequest) {
     const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: "generated-documents",
-          resource_type: "raw",
-          public_id: `${type.replace(/\s+/g, "_")}_${employeeName.replace(/\s+/g, "_")}_${Date.now()}`,
+          folder: "company-logo",
+          public_id: `logo_${Date.now()}`,
         },
         (error, result) => {
           if (error) reject(error)
@@ -27,7 +25,6 @@ export async function POST(request: NextRequest) {
         }
       )
 
-      const { Readable } = require("stream")
       const readable = new Readable()
       readable.push(buffer)
       readable.push(null)
@@ -39,10 +36,7 @@ export async function POST(request: NextRequest) {
       publicId: result.public_id,
     })
   } catch (error) {
-    console.error("PDF upload error:", error)
-    return NextResponse.json(
-      { error: "Failed to upload PDF" },
-      { status: 500 }
-    )
+    console.error("Logo upload error:", error)
+    return NextResponse.json({ error: "Failed to upload logo" }, { status: 500 })
   }
 }

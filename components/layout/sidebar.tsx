@@ -23,8 +23,7 @@ const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/employees", label: "Employees", icon: Users },
   { href: "/salary", label: "Salary Structure", icon: DollarSign },
-  { href: "/documents/generate", label: "Generate Documents", icon: FileText },
-  { href: "/documents/templates", label: "Templates", icon: FileText },
+  { href: "/documents", label: "Documents", icon: FileText },
   { href: "/uploads", label: "Upload Documents", icon: Upload },
   { href: "/settings", label: "Settings", icon: Settings },
 ]

@@ -12,6 +12,8 @@ const DEFAULT_SETTINGS: CompanySettings = {
   website: "www.company.com",
   logoUrl: "",
   logoPublicId: "",
+  signatureUrl: "",
+  signaturePublicId: "",
   footerText: "This is a computer-generated document.",
 }
 

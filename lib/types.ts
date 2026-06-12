@@ -175,5 +175,7 @@ export interface CompanySettings {
   website: string
   logoUrl: string
   logoPublicId: string
+  signatureUrl: string
+  signaturePublicId: string
   footerText: string
 }

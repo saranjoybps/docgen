@@ -4,15 +4,7 @@ import { useEffect, useState, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { DataTable, type Column } from "@/components/ui/data-table"
 import { getEmployees } from "@/services/employees"
 import { getSalaryStructures, deleteSalaryStructure } from "@/services/salary"
 import type { Employee, SalaryStructure } from "@/lib/types"
@@ -56,6 +48,79 @@ export default function SalaryPage() {
     setDeleting(null)
   }
 
+  const columns: Column<SalaryStructure>[] = [
+    {
+      header: "Employee",
+      cell: (s) => {
+        const emp = employeeMap.get(s.employeeId)
+        return (
+          <span className="font-medium">
+            {emp ? `${emp.firstName} ${emp.lastName}` : s.employeeId.slice(0, 8) + "..."}
+          </span>
+        )
+      },
+    },
+    {
+      header: "Gross /mo",
+      cell: (s) => `₹${(s.grossEarnings ?? 0).toLocaleString()}`,
+    },
+    {
+      header: "Deductions /mo",
+      cell: (s) => (
+        <span className="text-red-600">₹{(s.totalDeductions ?? 0).toLocaleString()}</span>
+      ),
+    },
+    {
+      header: "Net /mo",
+      cell: (s) => (
+        <span className="text-green-600 font-medium">₹{s.netSalary.toLocaleString()}</span>
+      ),
+    },
+    {
+      header: "CTC /yr",
+      cell: (s) => (
+        <span className="text-zinc-500 dark:text-zinc-400">₹{(s.ctc ?? 0).toLocaleString()}</span>
+      ),
+    },
+    {
+      header: "Effective",
+      cell: (s) => (
+        <span className="text-zinc-500 dark:text-zinc-400">
+          {format(s.effectiveFrom.toDate(), "PP")}
+        </span>
+      ),
+    },
+    {
+      header: "",
+      className: "w-20",
+      cell: (s) => (
+        <div className="flex gap-1">
+          <Button variant="ghost" size="icon" nativeButton={false} render={<Link href={`/salary/${s.id}/edit`} />}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={deleting === s.id ? "destructive" : "ghost"}
+            size="icon"
+            onClick={() => handleDelete(s.id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ]
+
+  const employeeOptions = useMemo(
+    () =>
+      employees
+        .filter((e) => salaries.some((s) => s.employeeId === e.id))
+        .map((e) => ({
+          label: `${e.firstName} ${e.lastName}`,
+          value: e.id,
+        })),
+    [employees, salaries]
+  )
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -69,67 +134,30 @@ export default function SalaryPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Salary History</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="py-3.5">Employee</TableHead>
-                <TableHead className="py-3.5">Gross /mo</TableHead>
-                <TableHead className="py-3.5">Deductions /mo</TableHead>
-                <TableHead className="py-3.5">Net /mo</TableHead>
-                <TableHead className="py-3.5">CTC /yr</TableHead>
-                <TableHead className="py-3.5">Effective</TableHead>
-                <TableHead className="w-24 py-3.5"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {salaries.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-zinc-500">
-                    No salary structures found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                salaries.map((s) => {
-                  const emp = employeeMap.get(s.employeeId)
-                  return (
-                    <TableRow key={s.id}>
-                      <TableCell className="font-medium py-3.5">
-                        {emp ? `${emp.firstName} ${emp.lastName}` : s.employeeId.slice(0, 8) + "..."}
-                      </TableCell>
-                      <TableCell className="py-3.5">₹{(s.grossEarnings ?? 0).toLocaleString()}</TableCell>
-                      <TableCell className="text-red-600 py-3.5">₹{(s.totalDeductions ?? 0).toLocaleString()}</TableCell>
-                      <TableCell className="text-green-600 font-medium py-3.5">₹{s.netSalary.toLocaleString()}</TableCell>
-                      <TableCell className="text-muted-foreground py-3.5">₹{(s.ctc ?? 0).toLocaleString()}</TableCell>
-                      <TableCell className="text-muted-foreground py-3.5">
-                        {format(s.effectiveFrom.toDate(), "PP")}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" nativeButton={false} render={<Link href={`/salary/${s.id}/edit`} />}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant={deleting === s.id ? "destructive" : "ghost"}
-                            size="icon"
-                            onClick={() => handleDelete(s.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <DataTable
+        data={salaries}
+        columns={columns}
+        keyExtractor={(s) => s.id}
+        emptyMessage="No salary structures found"
+        searchable
+        searchPlaceholder="Search by employee name..."
+        searchFn={(s, q) => {
+          const emp = employeeMap.get(s.employeeId)
+          const name = emp ? `${emp.firstName} ${emp.lastName}` : ""
+          return name.toLowerCase().includes(q)
+        }}
+        filters={
+          employeeOptions.length > 1
+            ? [
+                {
+                  label: "Employee",
+                  options: employeeOptions,
+                  filterFn: (s, v) => s.employeeId === v,
+                },
+              ]
+            : undefined
+        }
+      />
     </div>
   )
 }

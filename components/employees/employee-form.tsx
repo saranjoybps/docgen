@@ -16,6 +16,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import type { EmployeeFormData } from "@/lib/types"
 import { CalendarIcon } from "lucide-react"
+import Link from "next/link"
 
 const employeeSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -33,9 +34,10 @@ const employeeSchema = z.object({
 interface EmployeeFormProps {
   defaultValues?: Partial<EmployeeFormData>
   onSubmit: (data: EmployeeFormData) => Promise<void>
+  cancelHref?: string
 }
 
-export function EmployeeForm({ defaultValues, onSubmit }: EmployeeFormProps) {
+export function EmployeeForm({ defaultValues, onSubmit, cancelHref }: EmployeeFormProps) {
   const {
     register,
     handleSubmit,
@@ -74,7 +76,7 @@ export function EmployeeForm({ defaultValues, onSubmit }: EmployeeFormProps) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card>
         <CardContent className="pt-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
               <Input id="firstName" {...register("firstName")} />
@@ -161,6 +163,11 @@ export function EmployeeForm({ defaultValues, onSubmit }: EmployeeFormProps) {
           </div>
 
           <div className="flex gap-3 justify-end">
+            {cancelHref && (
+              <Button variant="outline" type="button" nativeButton={false} render={<Link href={cancelHref} />}>
+                Cancel
+              </Button>
+            )}
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Save Employee"}
             </Button>

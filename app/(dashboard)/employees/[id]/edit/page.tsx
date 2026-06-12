@@ -64,7 +64,7 @@ export default function EditEmployeePage() {
           <p className="text-zinc-500 mt-1">Update employee information</p>
         </div>
       </div>
-      <EmployeeForm defaultValues={defaultValues} onSubmit={handleSubmit} />
+      <EmployeeForm defaultValues={defaultValues} onSubmit={handleSubmit} cancelHref={`/employees/${params.id}`} />
     </div>
   )
 }

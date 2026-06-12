@@ -33,7 +33,7 @@ export default function AddEmployeePage() {
           <p className="text-zinc-500 mt-1">Add a new employee to the system</p>
         </div>
       </div>
-      <EmployeeForm onSubmit={handleSubmit} />
+      <EmployeeForm onSubmit={handleSubmit} cancelHref="/employees" />
     </div>
   )
 }

@@ -163,7 +163,7 @@ export default function AddUploadPage() {
               <SelectContent>
                 {UPLOAD_TYPE_GROUPS.map((group) => (
                   <div key={group.label}>
-                    <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                    <div className="px-2 py-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
                       {group.label}
                     </div>
                     {group.types.map((t) => (
