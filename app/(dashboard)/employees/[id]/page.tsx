@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Pencil, Calendar, Mail, Phone, Cake, MapPin, BadgeCheck, FileText, Upload, IndianRupee, Building2, Briefcase } from "lucide-react"
+import { ArrowLeft, Pencil, Calendar, Mail, Phone, Cake, MapPin, BadgeCheck, FileText, Upload, IndianRupee, Building2, Briefcase, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getEmployee, updateEmployeeStatus } from "@/services/employees"
 import { getSalaryStructures, deactivateSalary } from "@/services/salary"
 import { getGeneratedDocuments, getUploadedDocuments } from "@/services/documents"
-import type { Employee, SalaryStructure, GeneratedDocument, UploadedDocument } from "@/lib/types"
+import { getCompanySettings } from "@/services/settings"
+import type { Employee, SalaryStructure, GeneratedDocument, UploadedDocument, CompanySettings } from "@/lib/types"
 import { format } from "date-fns"
 import { toast } from "sonner"
 import { DOCUMENT_TYPE_LABELS } from "@/lib/types"
@@ -31,6 +32,7 @@ export default function EmployeeDetailPage() {
   const [salaries, setSalaries] = useState<SalaryStructure[]>([])
   const [documents, setDocuments] = useState<GeneratedDocument[]>([])
   const [uploads, setUploads] = useState<UploadedDocument[]>([])
+  const [companyName, setCompanyName] = useState("")
 
   useEffect(() => {
     const id = params.id as string
@@ -50,6 +52,10 @@ export default function EmployeeDetailPage() {
       setSalaries(sals)
       setDocuments(docs)
       setUploads(uplds)
+      if (emp.companyId) {
+        const cs = await getCompanySettings(emp.companyId)
+        setCompanyName(cs?.companyName || "")
+      }
     }
     load()
   }, [params.id, router])
@@ -313,11 +319,27 @@ export default function EmployeeDetailPage() {
                     </p>
                   </div>
                 </div>
+                <div>
+                  <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Last Working Date</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <LogOut className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <p className="font-medium">
+                      {employee.lastWorkingDate ? format(employee.lastWorkingDate.toDate(), "PPP") : "—"}
+                    </p>
+                  </div>
+                </div>
                 <div className="md:col-span-2">
                   <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Address</p>
                   <div className="flex items-start gap-1.5 mt-1">
                     <MapPin className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
                     <p className="font-medium">{employee.address}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Company</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <Building2 className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <p className="font-medium">{companyName || (employee.companyId ? "Loading..." : "—")}</p>
                   </div>
                 </div>
                 <div>

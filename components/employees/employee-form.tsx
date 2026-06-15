@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
@@ -14,9 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import type { EmployeeFormData } from "@/lib/types"
-import { CalendarIcon } from "lucide-react"
+import type { EmployeeFormData, CompanySettings } from "@/lib/types"
+import { CalendarIcon, Building2 } from "lucide-react"
 import Link from "next/link"
+import { listCompanySettings } from "@/services/settings"
 
 const employeeSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -27,8 +29,10 @@ const employeeSchema = z.object({
   designation: z.string().min(1, "Designation is required"),
   dateOfJoining: z.string().min(1, "Date of joining is required"),
   dateOfBirth: z.string().optional(),
+  lastWorkingDate: z.string().optional(),
   status: z.enum(["active", "inactive", "terminated", "resigned"]),
   address: z.string().min(1, "Address is required"),
+  companyId: z.string().min(1, "Company is required"),
 })
 
 interface EmployeeFormProps {
@@ -38,6 +42,12 @@ interface EmployeeFormProps {
 }
 
 export function EmployeeForm({ defaultValues, onSubmit, cancelHref }: EmployeeFormProps) {
+  const [companies, setCompanies] = useState<(CompanySettings & { id: string })[]>([])
+
+  useEffect(() => {
+    listCompanySettings().then(setCompanies)
+  }, [])
+
   const {
     register,
     handleSubmit,
@@ -64,8 +74,10 @@ export function EmployeeForm({ defaultValues, onSubmit, cancelHref }: EmployeeFo
       designation: "",
       dateOfJoining: "",
       dateOfBirth: "",
+      lastWorkingDate: "",
       status: "active",
       address: "",
+      companyId: "",
       ...defaultValues,
     },
   })
@@ -134,6 +146,10 @@ export function EmployeeForm({ defaultValues, onSubmit, cancelHref }: EmployeeFo
               <Input id="dateOfBirth" type="date" {...register("dateOfBirth")} />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="lastWorkingDate">Last Working Date</Label>
+              <Input id="lastWorkingDate" type="date" {...register("lastWorkingDate")} />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
                 value={status}
@@ -151,6 +167,41 @@ export function EmployeeForm({ defaultValues, onSubmit, cancelHref }: EmployeeFo
                   <SelectItem value="resigned">Resigned</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="companyId">Company</Label>
+              {companies.length === 0 ? (
+                <div className="text-sm text-zinc-400 border rounded-md px-3 py-2">
+                  No companies — add one in{" "}
+                  <Link href="/settings" className="text-blue-600 underline">Settings</Link>
+                </div>
+              ) : (
+                <Select
+                  value={watch("companyId")}
+                  onValueChange={(value) => setValue("companyId", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select company">
+                      {watch("companyId")
+                        ? companies.find((c) => c.id === watch("companyId"))?.companyName || "Select company"
+                        : "Select company"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {companies.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-3.5 w-3.5 text-zinc-400" />
+                          {c.companyName}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {errors.companyId && (
+                <p className="text-sm text-red-500">{errors.companyId.message}</p>
+              )}
             </div>
           </div>
 

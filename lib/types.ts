@@ -12,8 +12,10 @@ export interface Employee {
   designation: string
   dateOfJoining: Timestamp
   dateOfBirth: Timestamp | null
+  lastWorkingDate: Timestamp | null
   status: EmployeeStatus
   address: string
+  companyId: string
   createdAt: Timestamp
   updatedAt: Timestamp
 }
@@ -27,8 +29,10 @@ export interface EmployeeFormData {
   designation: string
   dateOfJoining: string
   dateOfBirth: string
+  lastWorkingDate: string
   status: EmployeeStatus
   address: string
+  companyId: string
 }
 
 export interface SalaryAllowance {
@@ -110,6 +114,28 @@ export type DocumentType =
   | "leave_application"
   | "medical_certificate"
   | "id_card"
+  | "aadhaar_card"
+  | "pan_card"
+  | "passport"
+  | "passport_photo"
+  | "updated_resume"
+  | "marksheet_10th"
+  | "marksheet_12th"
+  | "degree_certificate"
+  | "semester_marksheets"
+  | "professional_certifications"
+  | "previous_company_offer_letter"
+  | "promotion_letter"
+  | "latest_increment_letter"
+  | "form_16"
+  | "salary_bank_statement"
+  | "uan_number"
+  | "pf_details"
+  | "esic_details"
+  | "bank_account_proof"
+  | "address_proof"
+  | "emergency_contact"
+  | "background_verification"
   | "other"
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
@@ -133,6 +159,28 @@ export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   leave_application: "Leave Application",
   medical_certificate: "Medical Certificate",
   id_card: "ID Card",
+  aadhaar_card: "Aadhaar Card",
+  pan_card: "PAN Card",
+  passport: "Passport",
+  passport_photo: "Passport-size Photographs",
+  updated_resume: "Updated Resume",
+  marksheet_10th: "10th Mark Sheet/Certificate",
+  marksheet_12th: "12th Mark Sheet/Certificate",
+  degree_certificate: "Degree Certificate",
+  semester_marksheets: "Semester Mark Sheets",
+  professional_certifications: "Professional Certifications",
+  previous_company_offer_letter: "Previous Company Offer Letter",
+  promotion_letter: "Promotion Letter",
+  latest_increment_letter: "Latest Increment Letter",
+  form_16: "Form 16",
+  salary_bank_statement: "Salary Bank Statement",
+  uan_number: "UAN Number",
+  pf_details: "PF Details/Passbook",
+  esic_details: "ESIC Details",
+  bank_account_proof: "Bank Account Proof",
+  address_proof: "Address Proof",
+  emergency_contact: "Emergency Contact Details",
+  background_verification: "Background Verification Details",
   other: "Other",
 }
 
@@ -173,9 +221,52 @@ export interface CompanySettings {
   phone: string
   email: string
   website: string
+  registrationNumber: string
+  gstNumber: string
   logoUrl: string
   logoPublicId: string
   signatureUrl: string
   signaturePublicId: string
   footerText: string
+  primaryColor?: string
+  secondaryColor?: string
+  bodyColor?: string
+  mutedColor?: string
+  watermarkEnabled?: boolean
+  showPageNumbers?: boolean
+  marginTop?: number
+  marginBottom?: number
+  marginLeft?: number
+  marginRight?: number
+  bodyFontSize?: number
+  titleFontSize?: number
+  watermarkOpacity?: number
+}
+
+export interface DocumentDesign {
+  companyName: string
+  address: string
+  phone: string
+  email: string
+  website: string
+  registrationNumber: string
+  gstNumber: string
+  logoUrl: string
+  logoPublicId: string
+  signatureUrl: string
+  signaturePublicId: string
+  footerText: string
+  primaryColor: string
+  secondaryColor: string
+  bodyColor: string
+  mutedColor: string
+  watermarkEnabled: boolean
+  showPageNumbers: boolean
+  marginTop: number
+  marginBottom: number
+  marginLeft: number
+  marginRight: number
+  bodyFontSize: number
+  titleFontSize: number
+  watermarkOpacity: number
 }

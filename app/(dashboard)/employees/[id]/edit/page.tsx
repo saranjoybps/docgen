@@ -33,8 +33,10 @@ export default function EditEmployeePage() {
         designation: emp.designation,
         dateOfJoining: format(emp.dateOfJoining.toDate(), "yyyy-MM-dd"),
         dateOfBirth: emp.dateOfBirth ? format(emp.dateOfBirth.toDate(), "yyyy-MM-dd") : "",
+        lastWorkingDate: emp.lastWorkingDate ? format(emp.lastWorkingDate.toDate(), "yyyy-MM-dd") : "",
         status: emp.status,
         address: emp.address,
+        companyId: emp.companyId || "",
       })
     })
   }, [params.id, router])

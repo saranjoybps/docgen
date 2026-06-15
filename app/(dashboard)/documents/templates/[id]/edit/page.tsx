@@ -25,7 +25,7 @@ export default function EditTemplatePage() {
     getTemplate(id).then((t) => {
       if (!t) {
         toast.error("Template not found")
-        router.push("/documents/templates")
+        router.push("/documents")
         return
       }
       setName(t.name)
@@ -51,7 +51,7 @@ export default function EditTemplatePage() {
     try {
       await updateTemplate(params.id as string, { name: name.trim(), content: content.trim() })
       toast.success("Template updated")
-      router.push("/documents/templates")
+      router.push("/documents")
     } catch {
       toast.error("Failed to update template")
     } finally {
@@ -66,7 +66,7 @@ export default function EditTemplatePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href="/documents/templates" />}>
+        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href="/documents" />}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
@@ -121,7 +121,7 @@ export default function EditTemplatePage() {
         </Card>
 
         <div className="flex gap-3 justify-end mt-6">
-          <Button variant="outline" nativeButton={false} render={<Link href="/documents/templates" />}>
+          <Button variant="outline" nativeButton={false} render={<Link href="/documents" />}>
             Cancel
           </Button>
           <Button type="submit" disabled={saving}>

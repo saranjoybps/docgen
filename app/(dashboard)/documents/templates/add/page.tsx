@@ -35,7 +35,7 @@ export default function AddTemplatePage() {
     try {
       await addTemplate({ name: name.trim(), content: content.trim() })
       toast.success("Template created")
-      router.push("/documents/templates")
+      router.push("/documents")
     } catch {
       toast.error("Failed to create template")
     } finally {
@@ -46,7 +46,7 @@ export default function AddTemplatePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href="/documents/templates" />}>
+        <Button variant="ghost" size="icon" nativeButton={false} render={<Link href="/documents" />}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
@@ -107,7 +107,7 @@ export default function AddTemplatePage() {
         </Card>
 
         <div className="flex gap-3 justify-end mt-6">
-          <Button variant="outline" nativeButton={false} render={<Link href="/documents/templates" />}>
+          <Button variant="outline" nativeButton={false} render={<Link href="/documents" />}>
             Cancel
           </Button>
           <Button type="submit" disabled={saving}>

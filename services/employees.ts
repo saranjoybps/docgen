@@ -39,6 +39,7 @@ export async function addEmployee(data: EmployeeFormData) {
     ...data,
     dateOfJoining: Timestamp.fromDate(new Date(data.dateOfJoining)),
     dateOfBirth: data.dateOfBirth ? Timestamp.fromDate(new Date(data.dateOfBirth)) : null,
+    lastWorkingDate: data.lastWorkingDate ? Timestamp.fromDate(new Date(data.lastWorkingDate)) : null,
     createdAt: now,
     updatedAt: now,
   })
@@ -52,6 +53,11 @@ export async function updateEmployee(id: string, data: Partial<EmployeeFormData>
   }
   if (data.dateOfBirth) {
     updateData.dateOfBirth = Timestamp.fromDate(new Date(data.dateOfBirth))
+  }
+  if (data.lastWorkingDate) {
+    updateData.lastWorkingDate = Timestamp.fromDate(new Date(data.lastWorkingDate))
+  } else if (data.lastWorkingDate === "") {
+    updateData.lastWorkingDate = null
   }
   await updateDoc(doc(db, COLLECTION, id), updateData)
 }

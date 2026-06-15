@@ -105,6 +105,7 @@ export default function TemplatesPage() {
         searchable
         searchPlaceholder="Search templates..."
         searchFn={(t, q) => t.name.toLowerCase().includes(q)}
+        pageSizeOptions={[10, 20, 50]}
       />
     </div>
   )

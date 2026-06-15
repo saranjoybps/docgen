@@ -1,16 +1,18 @@
-const NAVY = "#1e3a5f"
+import type { CompanySettings } from "./types"
+import { buildDesign, buildDocumentDefinition, requiresSignature } from "./document-design"
+
 const BODY = "#1e293b"
-const MUTED = "#64748b"
 const BG = "#f8fafc"
 const BORDER = "#e2e8f0"
-const BLUE = "#2563eb"
 
-const margin = 40
-const pageWidth = 595.28
-const contentWidth = pageWidth - margin * 2
+const NAVY = "#1e3a5f"
 
-function parseContent(content: string): any[] {
+const contentWidth = 595.28 - 40 - 40
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseContent(content: string): any[] {
   const lines = content.split("\n")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const elements: any[] = []
   let inTable = false
   let tableRows: string[][] = []
@@ -18,6 +20,7 @@ function parseContent(content: string): any[] {
 
   function flushTable() {
     if (tableRows.length === 0) return
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const body: any[] = []
     if (tableHeaders.length > 0) {
       body.push(tableHeaders.map((h) => ({
@@ -53,7 +56,7 @@ function parseContent(content: string): any[] {
         paddingTop: () => 5,
         paddingBottom: () => 5,
       },
-      margin: [0, 8, 0, 8],
+      margin: [0, 6, 0, 6],
     })
     tableRows = []
     tableHeaders = []
@@ -65,7 +68,7 @@ function parseContent(content: string): any[] {
 
     if (!trimmed) {
       if (inTable) { flushTable(); inTable = false }
-      elements.push({ text: "", margin: [0, 3, 0, 3] })
+      elements.push({ text: "", margin: [0, 1.5, 0, 1.5] })
       continue
     }
 
@@ -83,19 +86,13 @@ function parseContent(content: string): any[] {
 
     if (inTable) { flushTable(); inTable = false }
 
-    if (/^[A-Z0-9][.)]\s+[A-Z]/.test(trimmed)) {
-      elements.push({
-        columns: [
-          { canvas: [{ type: "rect", x: 0, y: 0, w: 3, h: 14, color: BLUE }], width: 3 },
-          { text: trimmed, style: "sectionHeader", margin: [8, 0, 0, 0] },
-        ],
-        margin: [0, 10, 0, 4],
-      })
+    if (/^[A-Z0-9]+[.)]\s+[A-Z]/.test(trimmed)) {
+      elements.push({ text: trimmed, style: "sectionHeader", margin: [0, 4, 0, 1] })
       continue
     }
 
-    if (/^[A-Z\s]{3,}$/.test(trimmed) && trimmed.length > 10) {
-      elements.push({ text: trimmed, style: "sectionCenter", margin: [0, 10, 0, 6] })
+    if (/^[A-Z\s]{3,}:\s*$/.test(trimmed) && trimmed.length > 10) {
+      elements.push({ text: trimmed, style: "sectionCenter", margin: [0, 4, 0, 2] })
       continue
     }
 
@@ -111,8 +108,8 @@ function parseContent(content: string): any[] {
 
     if (/_{3,}/.test(trimmed) || /-{3,}/.test(trimmed)) {
       elements.push({
-        canvas: [{ type: "line", x1: 0, y1: 0, x2: contentWidth, y2: 0, thickness: 1, color: BORDER }],
-        margin: [0, 8, 0, 8],
+        canvas: [{ type: "line", x1: 0, y1: 0, x2: contentWidth, y2: 0, thickness: 0.5, color: BORDER }],
+        margin: [0, 6, 0, 6],
       })
       continue
     }
@@ -148,16 +145,10 @@ function parseContent(content: string): any[] {
   return elements
 }
 
-function requiresSignature(docType: string): boolean {
-  const lower = docType.toLowerCase()
-  if (lower.includes("payslip") || lower.includes("id card")) {
-    return false
-  }
-  return true
-}
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pdfMakeInstance: any = null
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getPdfMake(): Promise<any> {
   if (pdfMakeInstance) return pdfMakeInstance
   const [pdfMakeModule, pdfFontsModule] = await Promise.all([
@@ -194,178 +185,36 @@ export async function generateDocumentPdfBlob(
   content: string,
   docType: string,
   employeeName: string,
-  settings?: {
-    companyName?: string
-    address?: string
-    phone?: string
-    website?: string
-    logoUrl?: string
-    signatureUrl?: string
-    footerText?: string
-  }
+  settings?: CompanySettings
 ): Promise<Blob> {
   const pdfMake = await getPdfMake()
-
-  const companyName = settings?.companyName || "DOCUMENTS MANAGEMENT"
-  const address = settings?.address || ""
-  const phone = settings?.phone || ""
-  const website = settings?.website || ""
-  const logoUrl = settings?.logoUrl || ""
-  const signatureUrl = settings?.signatureUrl || ""
-  const footerText = settings?.footerText || ""
+  const design = buildDesign(settings || {
+    companyName: "DOCUMENTS MANAGEMENT",
+    address: "",
+    phone: "",
+    email: "",
+    website: "",
+    logoUrl: "",
+    logoPublicId: "",
+    signatureUrl: "",
+    signaturePublicId: "",
+    footerText: "",
+  })
 
   const [logoDataUrl, signatureDataUrl] = await Promise.all([
-    imageUrlToDataUrl(logoUrl),
-    imageUrlToDataUrl(signatureUrl),
+    imageUrlToDataUrl(design.logoUrl),
+    imageUrlToDataUrl(design.signatureUrl),
   ])
 
-  const firstPageHeader = logoDataUrl
-    ? {
-        columns: [
-          { image: logoDataUrl, width: 56, height: 56, alignment: "left" },
-          {
-            stack: [
-              { text: companyName, fontSize: 16, bold: true, color: NAVY, margin: [0, 2, 0, 0] },
-              ...(address ? [{ text: address, fontSize: 8, color: MUTED, margin: [4, 0, 0, 0] }] : []),
-              ...(phone || website ? [{ text: [phone, website].filter(Boolean).join(" | "), fontSize: 8, color: MUTED, margin: [4, 1, 0, 0] }] : []),
-            ],
-            margin: [12, 0, 0, 0],
-          },
-        ],
-        margin: [0, 0, 0, 6],
-      }
-    : {
-        stack: [
-          { text: companyName, fontSize: 16, bold: true, color: NAVY },
-          ...(address || phone || website ? [{ text: [address, phone, website].filter(Boolean).join(" · "), fontSize: 9, color: MUTED, margin: [0, 2, 0, 0] }] : []),
-        ],
-        margin: [0, 0, 0, 6],
-      }
-
-  const headerLine = {
-    canvas: [{ type: "line", x1: 0, y1: 0, x2: contentWidth, y2: 0, thickness: 1, color: BORDER }],
-  }
-
+  const contentElements = parseContent(content)
   const showSignature = !!signatureDataUrl && requiresSignature(docType)
 
-  const docDefinition: any = {
-    pageSize: "A4",
-    pageMargins: [margin, 120, margin, 60],
-
-    background: (currentPage: number, pageSize: { width: number; height: number }) => {
-      if (!logoDataUrl) return null
-      const w = pageSize.width * 0.35
-      return {
-        image: logoDataUrl,
-        width: w,
-        opacity: 0.04,
-        absolutePosition: {
-          x: (pageSize.width - w) / 2,
-          y: (pageSize.height - w) / 2,
-        },
-      }
-    },
-
-    header: (currentPage: number) => {
-      if (currentPage === 1) {
-        return {
-          margin: [margin, 16, margin, 0],
-          stack: [firstPageHeader, headerLine],
-        }
-      }
-      return {
-        margin: [margin, 10, margin, 0],
-        stack: [
-          { text: companyName, fontSize: 9, color: MUTED },
-          { canvas: [{ type: "line", x1: 0, y1: 0, x2: contentWidth, y2: 0, thickness: 0.5, color: BORDER }], margin: [0, 4, 0, 0] },
-        ],
-      }
-    },
-
-    footer: (currentPage: number, pageCount: number) => ({
-      margin: [margin, 0, margin, 14],
-      stack: [
-        { canvas: [{ type: "line", x1: 0, y1: 0, x2: contentWidth, y2: 0, thickness: 0.5, color: BORDER }], margin: [0, 0, 0, 6] },
-        {
-          columns: [
-            { text: footerText || companyName, fontSize: 8, color: MUTED, alignment: "left" },
-            { text: `Page ${currentPage} of ${pageCount}`, fontSize: 8, color: MUTED, alignment: "right" },
-          ],
-        },
-      ],
-    }),
-
-    content: [
-      { text: docType, style: "title" },
-      ...parseContent(content),
-      ...(showSignature
-        ? [
-            { text: "", margin: [0, 24, 0, 0] },
-            { text: "Authorized Signature", fontSize: 10, bold: true, color: NAVY, margin: [0, 0, 0, 8] },
-            { image: signatureDataUrl!, width: 130, margin: [0, 0, 0, 4] },
-            { text: companyName, fontSize: 10, color: BODY },
-          ]
-        : []),
-    ],
-
-    styles: {
-      title: {
-        fontSize: 16,
-        bold: true,
-        color: NAVY,
-        alignment: "center",
-        margin: [0, 0, 0, 14],
-      },
-      sectionHeader: {
-        fontSize: 11,
-        bold: true,
-        color: NAVY,
-      },
-      sectionCenter: {
-        fontSize: 12,
-        bold: true,
-        color: NAVY,
-        alignment: "center",
-      },
-      subject: {
-        fontSize: 10,
-        bold: true,
-        color: NAVY,
-        margin: [0, 4, 0, 10],
-      },
-      greeting: {
-        fontSize: 10,
-        color: BODY,
-        margin: [0, 4, 0, 2],
-      },
-      body: {
-        fontSize: 10,
-        color: BODY,
-        lineHeight: 1.6,
-        margin: [0, 1.5, 0, 1.5],
-      },
-      signatureBold: {
-        fontSize: 10,
-        bold: true,
-        color: NAVY,
-        margin: [0, 16, 0, 2],
-      },
-      signatureLine: {
-        fontSize: 10,
-        color: BODY,
-        margin: [0, 8, 0, 0],
-      },
-    },
-
-    defaultStyle: {
-      font: "Roboto",
-    },
-  }
-
-  return new Promise<Blob>((resolve) => {
-    const pdfDoc = pdfMake.createPdf(docDefinition)
-    pdfDoc.getBlob((blob: Blob) => {
-      resolve(blob)
-    })
+  const docDefinition = buildDocumentDefinition(contentElements, design, {
+    documentTitle: docType,
+    logoDataUrl,
+    signatureDataUrl: showSignature ? signatureDataUrl : null,
   })
+
+  const pdfDoc = pdfMake.createPdf(docDefinition)
+  return pdfDoc.getBlob()
 }

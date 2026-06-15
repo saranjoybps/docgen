@@ -8,7 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -22,16 +24,28 @@ import { ArrowLeft, Upload, FileText, X } from "lucide-react"
 
 const UPLOAD_TYPE_GROUPS: { label: string; types: DocumentType[] }[] = [
   {
-    label: "Employment Letters",
-    types: ["offer_letter", "appointment_letter", "confirmation_letter", "employment_contract"],
+    label: "Identity & Address Proof",
+    types: ["aadhaar_card", "pan_card", "passport", "address_proof", "bank_account_proof"],
+  },
+  {
+    label: "Educational Documents",
+    types: ["marksheet_10th", "marksheet_12th", "degree_certificate", "semester_marksheets", "professional_certifications"],
+  },
+  {
+    label: "Employment & Experience",
+    types: ["updated_resume", "previous_company_offer_letter", "appointment_letter", "experience_letter", "relieving_letter", "promotion_letter", "offer_letter", "confirmation_letter", "employment_contract"],
+  },
+  {
+    label: "Payroll & Financial",
+    types: ["payslip", "latest_increment_letter", "increment_letter", "salary_revision", "bonus_letter", "form_16", "salary_bank_statement", "uan_number", "pf_details", "esic_details"],
   },
   {
     label: "Performance & Review",
-    types: ["appraisal_letter", "increment_letter", "bonus_letter", "salary_revision"],
+    types: ["appraisal_letter"],
   },
   {
     label: "Separation",
-    types: ["resignation_letter", "relieving_letter", "experience_letter", "separation_letter"],
+    types: ["resignation_letter", "separation_letter"],
   },
   {
     label: "Disciplinary",
@@ -42,8 +56,8 @@ const UPLOAD_TYPE_GROUPS: { label: string; types: DocumentType[] }[] = [
     types: ["transfer_letter", "nda_agreement", "id_card", "leave_application", "medical_certificate"],
   },
   {
-    label: "Other",
-    types: ["payslip", "other"],
+    label: "Other Documents",
+    types: ["passport_photo", "emergency_contact", "background_verification", "other"],
   },
 ]
 
@@ -196,16 +210,14 @@ export default function EditUploadPage() {
               </SelectTrigger>
               <SelectContent>
                 {UPLOAD_TYPE_GROUPS.map((group) => (
-                  <div key={group.label}>
-                    <div className="px-2 py-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                      {group.label}
-                    </div>
+                  <SelectGroup key={group.label}>
+                    <SelectLabel>{group.label}</SelectLabel>
                     {group.types.map((t) => (
                       <SelectItem key={t} value={t}>
                         {DOCUMENT_TYPE_LABELS[t]}
                       </SelectItem>
                     ))}
-                  </div>
+                  </SelectGroup>
                 ))}
               </SelectContent>
             </Select>

@@ -16,8 +16,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { getEmployees } from "@/services/employees"
 import { getGeneratedDocuments, getUploadedDocuments } from "@/services/documents"
 import { getSalaryStructures } from "@/services/salary"
-import { getCompanySettings } from "@/services/settings"
-import type { Employee, GeneratedDocument, UploadedDocument, CompanySettings } from "@/lib/types"
+import { listCompanySettings } from "@/services/settings"
+import type { Employee, GeneratedDocument, UploadedDocument } from "@/lib/types"
 import { format } from "date-fns"
 
 const quickActions = [
@@ -58,18 +58,18 @@ export default function DashboardPage() {
   const [recentEmployees, setRecentEmployees] = useState<Employee[]>([])
   const [recentDocs, setRecentDocs] = useState<GeneratedDocument[]>([])
   const [recentUploads, setRecentUploads] = useState<UploadedDocument[]>([])
-  const [settings, setSettings] = useState<CompanySettings | null>(null)
+  const [companyName, setCompanyName] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       try {
-        const [employees, documents, salaryStructures, uploads, stgs] = await Promise.all([
+        const [employees, documents, salaryStructures, uploads, companies] = await Promise.all([
           getEmployees(),
           getGeneratedDocuments(),
           getSalaryStructures(),
           getUploadedDocuments(),
-          getCompanySettings(),
+          listCompanySettings(),
         ])
         setStats({
           employees: employees.length,
@@ -81,7 +81,7 @@ export default function DashboardPage() {
         setRecentEmployees(employees.slice(0, 5))
         setRecentDocs(documents.slice(0, 5))
         setRecentUploads(uploads.slice(0, 5))
-        setSettings(stgs)
+        setCompanyName(companies[0]?.companyName || "")
       } catch {
         // silent
       } finally {
@@ -92,7 +92,6 @@ export default function DashboardPage() {
   }, [])
 
   const greeting = getGreeting()
-  const companyName = settings?.companyName || ""
 
   return (
     <div className="space-y-6">

@@ -4,10 +4,16 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { ChevronDownIcon } from "lucide-react"
 
+interface SelectItemDef {
+  value: string
+  label: string
+  groupLabel?: string
+}
+
 interface SelectContextType {
   value?: string
   onValueChange?: (value: string) => void
-  items: { value: string; label: string }[]
+  items: SelectItemDef[]
   placeholder?: string
 }
 
@@ -39,6 +45,18 @@ Select.displayName = "Select"
 function SelectTrigger({ className, children: _children }: { className?: string; children?: React.ReactNode }) {
   const ctx = React.useContext(SelectContext)
 
+  const grouped = React.useMemo(() => {
+    const groups = new Map<string, SelectItemDef[]>()
+    for (const item of ctx?.items ?? []) {
+      const key = item.groupLabel || ""
+      if (!groups.has(key)) groups.set(key, [])
+      groups.get(key)!.push(item)
+    }
+    return groups
+  }, [ctx?.items])
+
+  const hasGroups = ctx?.items?.some((i) => i.groupLabel)
+
   return (
     <div className="relative">
       <select
@@ -52,11 +70,21 @@ function SelectTrigger({ className, children: _children }: { className?: string;
         <option value="" disabled>
           {ctx?.placeholder ?? "Select..."}
         </option>
-        {(ctx?.items ?? []).map((item) => (
-          <option key={item.value} value={item.value}>
-            {item.label}
-          </option>
-        ))}
+        {hasGroups
+          ? Array.from(grouped.entries()).map(([groupLabel, groupItems]) => (
+              <optgroup key={groupLabel} label={groupLabel}>
+                {groupItems.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))
+          : (ctx?.items ?? []).map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
       </select>
       <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
     </div>
@@ -108,8 +136,8 @@ function extractText(node: React.ReactNode): string {
   return ""
 }
 
-function extractSelectItems(children: React.ReactNode): { value: string; label: string }[] {
-  const items: { value: string; label: string }[] = []
+function extractSelectItems(children: React.ReactNode, groupLabel?: string): SelectItemDef[] {
+  const items: SelectItemDef[] = []
 
   React.Children.forEach(children, (child) => {
     if (!React.isValidElement<{ children?: React.ReactNode; value?: string }>(child)) return
@@ -118,9 +146,20 @@ function extractSelectItems(children: React.ReactNode): { value: string; label: 
       items.push({
         value: child.props.value as string,
         label: extractText(child.props.children),
+        groupLabel,
       })
+    } else if ((child.type as { displayName?: string })?.displayName === "SelectGroup") {
+      let childGroupLabel = groupLabel
+      React.Children.forEach(child.props.children, (grandchild) => {
+        if (React.isValidElement<{ children?: React.ReactNode }>(grandchild)) {
+          if ((grandchild.type as { displayName?: string })?.displayName === "SelectLabel") {
+            childGroupLabel = extractText(grandchild.props.children)
+          }
+        }
+      })
+      items.push(...extractSelectItems(child.props.children, childGroupLabel))
     } else if (child.props.children) {
-      items.push(...extractSelectItems(child.props.children))
+      items.push(...extractSelectItems(child.props.children, groupLabel))
     }
   })
 
