@@ -18,27 +18,29 @@ export default function EditEmployeePage() {
 
   useEffect(() => {
     const id = params.id as string
-    getEmployee(id).then((emp) => {
-      if (!emp) {
-        toast.error("Employee not found")
-        router.push("/employees")
-        return
-      }
-      setDefaultValues({
-        firstName: emp.firstName,
-        lastName: emp.lastName,
-        email: emp.email,
-        phone: emp.phone,
-        department: emp.department,
-        designation: emp.designation,
-        dateOfJoining: format(emp.dateOfJoining.toDate(), "yyyy-MM-dd"),
-        dateOfBirth: emp.dateOfBirth ? format(emp.dateOfBirth.toDate(), "yyyy-MM-dd") : "",
-        lastWorkingDate: emp.lastWorkingDate ? format(emp.lastWorkingDate.toDate(), "yyyy-MM-dd") : "",
-        status: emp.status,
-        address: emp.address,
-        companyId: emp.companyId || "",
+    getEmployee(id)
+      .then((emp) => {
+        if (!emp) {
+          toast.error("Employee not found")
+          router.push("/employees")
+          return
+        }
+        setDefaultValues({
+          firstName: emp.firstName,
+          lastName: emp.lastName,
+          email: emp.email,
+          phone: emp.phone,
+          department: emp.department,
+          designation: emp.designation,
+          dateOfJoining: format(emp.dateOfJoining.toDate(), "yyyy-MM-dd"),
+          dateOfBirth: emp.dateOfBirth ? format(emp.dateOfBirth.toDate(), "yyyy-MM-dd") : "",
+          lastWorkingDate: emp.lastWorkingDate ? format(emp.lastWorkingDate.toDate(), "yyyy-MM-dd") : "",
+          status: emp.status,
+          address: emp.address,
+          companyId: emp.companyId || "",
+        })
       })
-    })
+      .catch(() => toast.error("Failed to load employee"))
   }, [params.id, router])
 
   const handleSubmit = async (data: EmployeeFormData) => {

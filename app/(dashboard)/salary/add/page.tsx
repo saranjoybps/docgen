@@ -45,7 +45,7 @@ export default function AddSalaryPage() {
   const [step, setStep] = useState(0)
 
   useEffect(() => {
-    getEmployees().then(setEmployees)
+    getEmployees().then(setEmployees).catch(() => toast.error("Failed to load employees"))
   }, [])
 
   const earningsTotal =
@@ -336,7 +336,9 @@ export default function AddSalaryPage() {
               )}
 
               <div className="space-y-2">
-                <Label>Effective From</Label>
+                <Label>
+                  Effective From <span className="text-red-500">*</span>
+                </Label>
                 <Input type="date" value={effectiveFrom} onChange={(e) => setEffectiveFrom(e.target.value)} />
               </div>
 

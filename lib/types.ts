@@ -16,6 +16,7 @@ export interface Employee {
   status: EmployeeStatus
   address: string
   companyId: string
+  notes: string
   createdAt: Timestamp
   updatedAt: Timestamp
 }
@@ -269,4 +270,12 @@ export interface DocumentDesign {
   bodyFontSize: number
   titleFontSize: number
   watermarkOpacity: number
+}
+
+export interface Todo {
+  id: string
+  title: string
+  completed: boolean
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }

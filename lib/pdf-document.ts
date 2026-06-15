@@ -7,10 +7,12 @@ const BORDER = "#e2e8f0"
 
 const NAVY = "#1e3a5f"
 
-const contentWidth = 595.28 - 40 - 40
+function getContentWidth(marginLeft: number, marginRight: number) {
+  return 595.28 - marginLeft - marginRight
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseContent(content: string): any[] {
+export function parseContent(content: string, marginLeft = 40, marginRight = 40): any[] {
   const lines = content.split("\n")
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const elements: any[] = []
@@ -108,7 +110,7 @@ export function parseContent(content: string): any[] {
 
     if (/_{3,}/.test(trimmed) || /-{3,}/.test(trimmed)) {
       elements.push({
-        canvas: [{ type: "line", x1: 0, y1: 0, x2: contentWidth, y2: 0, thickness: 0.5, color: BORDER }],
+        canvas: [{ type: "line", x1: 0, y1: 0, x2: getContentWidth(marginLeft, marginRight), y2: 0, thickness: 0.5, color: BORDER }],
         margin: [0, 6, 0, 6],
       })
       continue
@@ -194,6 +196,8 @@ export async function generateDocumentPdfBlob(
     phone: "",
     email: "",
     website: "",
+    registrationNumber: "",
+    gstNumber: "",
     logoUrl: "",
     logoPublicId: "",
     signatureUrl: "",
@@ -206,7 +210,7 @@ export async function generateDocumentPdfBlob(
     imageUrlToDataUrl(design.signatureUrl),
   ])
 
-  const contentElements = parseContent(content)
+  const contentElements = parseContent(content, design.marginLeft, design.marginRight)
   const showSignature = !!signatureDataUrl && requiresSignature(docType)
 
   const docDefinition = buildDocumentDefinition(contentElements, design, {

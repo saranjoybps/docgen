@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { FileText, Loader2, Eye, Plus, Pencil, Trash2, Edit3, RefreshCw } from "lucide-react"
+import { FileText, Loader2, Eye, Plus, Pencil, Trash2, Edit3, RefreshCw, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -22,12 +22,14 @@ import { getEmployees } from "@/services/employees"
 import { getTemplates, getTemplate, deleteTemplate } from "@/services/templates"
 import { getActiveSalary } from "@/services/salary"
 import { getCompanySettings } from "@/services/settings"
-import { saveGeneratedDocument } from "@/services/documents"
-import type { Employee, DocumentTemplate, SalaryStructure, CompanySettings } from "@/lib/types"
+import { getGeneratedDocuments, saveGeneratedDocument, deleteGeneratedDocument } from "@/services/documents"
+import type { Employee, DocumentTemplate, SalaryStructure, CompanySettings, GeneratedDocument } from "@/lib/types"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { generateDocumentPdfBlob } from "@/lib/pdf-document"
 import Link from "next/link"
+
+import type { Resolver } from "react-hook-form"
 
 const generateSchema = z.object({
   employeeId: z.string().min(1, "Select an employee"),
@@ -61,16 +63,17 @@ export default function DocumentsPage() {
   const [customValues, setCustomValues] = useState<Record<string, string>>({})
   const previewUrlRef = useRef<string | null>(null)
 
-  const [templateList, setTemplateList] = useState<DocumentTemplate[]>([])
   const [deleting, setDeleting] = useState<string | null>(null)
   const [templatesLoading, setTemplatesLoading] = useState(true)
+  const [generatedDocs, setGeneratedDocs] = useState<GeneratedDocument[]>([])
+  const [generatedDocsLoading, setGeneratedDocsLoading] = useState(true)
+  const [deletingDoc, setDeletingDoc] = useState<string | null>(null)
 
   const {
     setValue,
     watch,
     formState: { errors },
   } = useForm({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: (async (values: any) => {
       const parsed = generateSchema.safeParse(values)
       if (parsed.success) return { values: parsed.data, errors: {} }
@@ -78,7 +81,7 @@ export default function DocumentsPage() {
       for (const issue of parsed.error.issues) {
         if (issue.path[0]) fieldErrors[issue.path[0] as string] = { message: issue.message }
       }
-      return { values, errors: fieldErrors }
+      return { values: {} as Record<string, never>, errors: fieldErrors }
     }) as any,
     defaultValues: { employeeId: "", templateId: "" },
   })
@@ -88,29 +91,38 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     async function load() {
-      const [emps, tmpls] = await Promise.all([
+      const [emps, tmpls, docs] = await Promise.all([
         getEmployees(),
         getTemplates(),
+        getGeneratedDocuments(),
       ])
-      setEmployees(emps.filter((e) => e.status === "active"))
+      const activeEmps = emps.filter((e) => e.status === "active")
+      setEmployees(activeEmps)
       setTemplates(tmpls)
-      setTemplateList(tmpls)
+      const activeIds = new Set(activeEmps.map((e) => e.id))
+      setGeneratedDocs(docs.filter((d) => activeIds.has(d.employeeId)))
       setTemplatesLoading(false)
+      setGeneratedDocsLoading(false)
     }
-    load()
+    load().catch(() => toast.error("Failed to load data"))
   }, [])
 
   useEffect(() => {
     if (employeeId) {
       const emp = employees.find((e) => e.id === employeeId) || null
       setSelectedEmployee(emp)
-      getActiveSalary(employeeId).then(setSalary)
+      getActiveSalary(employeeId).then(setSalary).catch(() => {})
       if (emp?.companyId) {
         setCompanySettingsLoading(true)
-        getCompanySettings(emp.companyId).then((cs) => {
-          setCompanySettings(cs)
-          setCompanySettingsLoading(false)
-        })
+        getCompanySettings(emp.companyId)
+          .then((cs) => {
+            setCompanySettings(cs)
+            setCompanySettingsLoading(false)
+          })
+          .catch(() => {
+            toast.error("Failed to load company settings")
+            setCompanySettingsLoading(false)
+          })
       } else {
         setCompanySettings(null)
         setCompanySettingsLoading(false)
@@ -124,10 +136,12 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     if (templateId) {
-      getTemplate(templateId).then((t) => {
-        setSelectedTemplate(t)
-        setCustomValues({})
-      })
+      getTemplate(templateId)
+        .then((t) => {
+          setSelectedTemplate(t)
+          setCustomValues({})
+        })
+        .catch(() => toast.error("Failed to load template"))
     } else {
       setSelectedTemplate(null)
     }
@@ -348,11 +362,40 @@ export default function DocumentsPage() {
     try {
       await deleteTemplate(id)
       toast.success("Template deleted")
-      setTemplateList((prev) => prev.filter((t) => t.id !== id))
+      setTemplates((prev) => prev.filter((t) => t.id !== id))
     } catch {
       toast.error("Failed to delete template")
     }
     setDeleting(null)
+  }
+
+  const handleDeleteGeneratedDoc = async (id: string) => {
+    if (deletingDoc !== id) { setDeletingDoc(id); return }
+    try {
+      await deleteGeneratedDocument(id)
+      toast.success("Document deleted")
+      setGeneratedDocs((prev) => prev.filter((d) => d.id !== id))
+    } catch {
+      toast.error("Failed to delete document")
+    }
+    setDeletingDoc(null)
+  }
+
+  const handleDownloadDoc = async (doc: GeneratedDocument) => {
+    try {
+      const res = await fetch(doc.pdfUrl)
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `${doc.type || "document"}_${doc.metadata?.employeeName || doc.employeeId}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error("Failed to download document")
+    }
   }
 
   const templateColumns: Column<DocumentTemplate>[] = [
@@ -411,6 +454,10 @@ export default function DocumentsPage() {
           <TabsTrigger value="generate">
             <FileText className="h-4 w-4 mr-2" />
             Generate Document
+          </TabsTrigger>
+          <TabsTrigger value="all">
+            <FileText className="h-4 w-4 mr-2" />
+            All Documents
           </TabsTrigger>
           <TabsTrigger value="templates">
             <FileText className="h-4 w-4 mr-2" />
@@ -559,6 +606,72 @@ export default function DocumentsPage() {
           )}
         </TabsContent>
 
+        <TabsContent value="all" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>All Documents</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable
+                data={generatedDocs}
+                columns={[
+                  {
+                    header: "Employee",
+                    cell: (doc) => (
+                      <span className="font-medium">
+                        {employees.find((e) => e.id === doc.employeeId)
+                          ? `${employees.find((e) => e.id === doc.employeeId)!.firstName} ${employees.find((e) => e.id === doc.employeeId)!.lastName}`
+                          : doc.metadata?.employeeName || doc.employeeId}
+                      </span>
+                    ),
+                  },
+                  {
+                    header: "Type",
+                    cell: (doc) => doc.type || doc.metadata?.templateName || "—",
+                    hideable: "md",
+                  },
+                  {
+                    header: "Generated",
+                    cell: (doc) => doc.generatedAt ? format(doc.generatedAt.toDate(), "PP") : "—",
+                    hideable: "lg",
+                  },
+                  {
+                    header: "",
+                    className: "w-32",
+                    cell: (doc) => (
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => handleDownloadDoc(doc)}>
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant={deletingDoc === doc.id ? "destructive" : "ghost"}
+                          size="icon"
+                          onClick={() => handleDeleteGeneratedDoc(doc.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ),
+                  },
+                ] as Column<GeneratedDocument>[]}
+                keyExtractor={(doc) => doc.id}
+                loading={generatedDocsLoading}
+                emptyMessage="No documents generated yet"
+                searchable
+                searchPlaceholder="Search documents..."
+                searchFn={(doc, q) => {
+                  const name = employees.find((e) => e.id === doc.employeeId)
+                    ? `${employees.find((e) => e.id === doc.employeeId)!.firstName} ${employees.find((e) => e.id === doc.employeeId)!.lastName}`
+                    : doc.metadata?.employeeName || ""
+                  return name.toLowerCase().includes(q) || (doc.type || "").toLowerCase().includes(q)
+                }}
+                pageSize={10}
+                pageSizeOptions={[10, 20, 50]}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="templates" className="mt-4">
           <Card>
             <CardHeader className="flex-row items-center justify-between">
@@ -570,7 +683,7 @@ export default function DocumentsPage() {
             </CardHeader>
             <CardContent>
               <DataTable
-                data={templateList}
+                data={templates}
                 columns={templateColumns}
                 keyExtractor={(t) => t.id}
                 loading={templatesLoading}

@@ -73,7 +73,7 @@ export default function AddUploadPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    getEmployees().then(setEmployees)
+    getEmployees().then(setEmployees).catch(() => toast.error("Failed to load employees"))
   }, [])
 
   const getEmployeeName = (id: string) => {

@@ -25,12 +25,12 @@ export default function SalaryPage() {
   }, [employees])
 
   useEffect(() => {
-    getEmployees().then(setEmployees)
+    getEmployees().then(setEmployees).catch(() => toast.error("Failed to load employees"))
   }, [])
 
   useEffect(() => {
     const employeeId = searchParams.get("employeeId")
-    getSalaryStructures(employeeId || undefined).then(setSalaries)
+    getSalaryStructures(employeeId || undefined).then(setSalaries).catch(() => toast.error("Failed to load salary data"))
   }, [searchParams])
 
   const handleDelete = async (id: string) => {

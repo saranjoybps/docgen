@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { loginUser } from "@/services/auth"
+import { loginUser, resetPassword } from "@/services/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,6 +14,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [resetting, setResetting] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +32,20 @@ export default function LoginPage() {
     }
   }
 
+  const handleReset = async () => {
+    if (!email.trim()) { setError("Enter your email first"); return }
+    setError("")
+    setResetting(true)
+    try {
+      await resetPassword(email)
+      setResetSent(true)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to send reset email")
+    } finally {
+      setResetting(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-4">
       <Card className="w-full max-w-md">
@@ -40,7 +55,7 @@ export default function LoginPage() {
               <FileText className="h-6 w-6 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Welcome to DocuCraft</CardTitle>
+          <CardTitle className="text-2xl">Welcome to DocuGen</CardTitle>
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -48,6 +63,11 @@ export default function LoginPage() {
             {error && (
               <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-200">
                 {error}
+              </div>
+            )}
+            {resetSent && (
+              <div className="bg-green-50 text-green-600 text-sm p-3 rounded-lg border border-green-200">
+                Reset link sent to your email
               </div>
             )}
             <div className="space-y-2">
@@ -71,18 +91,22 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  disabled={resetting}
+                  className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 underline-offset-2 hover:underline disabled:opacity-50"
+                >
+                  {resetting ? "Sending..." : "Forgot Password?"}
+                </button>
+              </div>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col border-t-0 bg-transparent px-0 pb-0 pt-4 -mx-0 -mb-0">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
             </Button>
-            <p className="text-sm text-zinc-500 text-center">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-zinc-900 font-medium hover:underline">
-                Register
-              </Link>
-            </p>
           </CardFooter>
         </form>
       </Card>

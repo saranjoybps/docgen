@@ -8,6 +8,7 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
   Timestamp,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
@@ -17,14 +18,13 @@ const COLLECTION = "salary_structures"
 
 export async function getSalaryStructures(employeeId?: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const constraints: any[] = []
-  if (employeeId) {
-    constraints.push(where("employeeId", "==", employeeId))
-  }
+  const constraints: any[] = employeeId ? [where("employeeId", "==", employeeId)] : [orderBy("effectiveFrom", "desc")]
   const q = query(collection(db, COLLECTION), ...constraints)
   const snapshot = await getDocs(q)
   const results = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as SalaryStructure))
-  results.sort((a, b) => b.effectiveFrom.toMillis() - a.effectiveFrom.toMillis())
+  if (employeeId) {
+    results.sort((a, b) => b.effectiveFrom.toMillis() - a.effectiveFrom.toMillis())
+  }
   return results
 }
 

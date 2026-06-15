@@ -16,7 +16,7 @@ import { Plus, Trash2, ArrowLeft, Check } from "lucide-react"
 const STEPS = ["Earnings", "Deductions", "Employer", "Review"]
 
 export default function EditSalaryPage() {
-  const { id } = useParams<{ id: string }>()
+  const params = useParams()
   const router = useRouter()
   const [employees, setEmployees] = useState<Employee[]>([])
   const [loading, setLoading] = useState(true)
@@ -48,7 +48,7 @@ export default function EditSalaryPage() {
 
   useEffect(() => {
     async function load() {
-      const data = await getSalaryStructure(id)
+      const data = await getSalaryStructure(params.id as string)
       if (!data) {
         toast.error("Salary structure not found")
         router.push("/salary")
@@ -74,7 +74,7 @@ export default function EditSalaryPage() {
       setLoading(false)
     }
     load()
-  }, [id, router])
+  }, [params.id, router])
 
   const earningsTotal =
     basicPay + da + hra + conveyanceAllowance + medicalAllowance + specialAllowance +
@@ -95,7 +95,7 @@ export default function EditSalaryPage() {
   const handleSave = async () => {
     if (!effectiveFrom) { toast.error("Effective date is required"); return }
     try {
-      await updateSalaryStructure(id, {
+      await updateSalaryStructure(params.id as string, {
         employeeId,
         basicPay, da, hra, conveyanceAllowance, medicalAllowance, specialAllowance,
         otherAllowances: otherAllowances.filter((a) => a.label && a.amount > 0),
@@ -355,7 +355,9 @@ export default function EditSalaryPage() {
               )}
 
               <div className="space-y-2">
-                <Label>Effective From</Label>
+                <Label>
+                  Effective From <span className="text-red-500">*</span>
+                </Label>
                 <Input type="date" value={effectiveFrom} onChange={(e) => setEffectiveFrom(e.target.value)} />
               </div>
 

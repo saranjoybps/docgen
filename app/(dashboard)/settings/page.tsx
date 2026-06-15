@@ -113,7 +113,6 @@ export default function SettingsPage() {
       titleFontSize: 16,
       watermarkOpacity: 0.04,
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: (async (values: any) => {
       const parsed = settingsSchema.safeParse(values)
       if (parsed.success) return { values: parsed.data, errors: {} }
@@ -121,7 +120,7 @@ export default function SettingsPage() {
       for (const issue of parsed.error.issues) {
         if (issue.path[0]) fieldErrors[issue.path[0] as string] = { message: issue.message }
       }
-      return { values, errors: fieldErrors }
+      return { values: {} as Record<string, never>, errors: fieldErrors }
     }) as any,
   })
 

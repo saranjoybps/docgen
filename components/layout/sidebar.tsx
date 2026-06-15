@@ -1,42 +1,35 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import {
   Users,
   FileText,
   DollarSign,
   Upload,
   Settings,
-  LogOut,
   Menu,
   X,
   LayoutDashboard,
+  CheckSquare,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { logoutUser } from "@/services/auth"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
+import { useState } from "react"
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/employees", label: "Employees", icon: Users },
   { href: "/salary", label: "Salary Structure", icon: DollarSign },
   { href: "/documents", label: "Documents", icon: FileText },
+  { href: "/todos", label: "Todo", icon: CheckSquare },
   { href: "/uploads", label: "Upload Documents", icon: Upload },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
-  const router = useRouter()
   const [open, setOpen] = useState(false)
-
-  const handleLogout = async () => {
-    await logoutUser()
-    router.push("/login")
-  }
 
   return (
     <>
@@ -56,7 +49,7 @@ export function Sidebar() {
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-6 border-b border-zinc-700">
             <Link href="/" className="text-xl font-bold tracking-tight">
-              DocuCraft
+              DocuGen
             </Link>
             <button onClick={() => setOpen(false)} className="lg:hidden">
               <X className="h-5 w-5" />
@@ -85,17 +78,6 @@ export function Sidebar() {
               )
             })}
           </nav>
-
-          <div className="p-4 border-t border-zinc-700">
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-zinc-400 hover:text-white hover:bg-zinc-800"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-4 w-4 mr-3" />
-              Logout
-            </Button>
-          </div>
         </div>
       </aside>
 

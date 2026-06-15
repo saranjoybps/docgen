@@ -23,6 +23,8 @@ export function buildDesign(settings: CompanySettings): DocumentDesign {
     phone: settings.phone,
     email: settings.email,
     website: settings.website,
+    registrationNumber: settings.registrationNumber || "",
+    gstNumber: settings.gstNumber || "",
     logoUrl: settings.logoUrl,
     logoPublicId: settings.logoPublicId,
     signatureUrl: settings.signatureUrl,
@@ -44,7 +46,9 @@ export function buildDesign(settings: CompanySettings): DocumentDesign {
   }
 }
 
-const contentWidth = 595.28 - DEFAULT_DESIGN.marginLeft - DEFAULT_DESIGN.marginRight
+function getContentWidth(marginLeft: number, marginRight: number) {
+  return 595.28 - marginLeft - marginRight
+}
 
 export function buildHeader(design: DocumentDesign, currentPage: number, logoDataUrl?: string) {
   if (currentPage === 1) {
@@ -104,7 +108,7 @@ export function buildFooter(design: DocumentDesign, currentPage: number, pageCou
   return {
     margin: [DEFAULT_DESIGN.marginLeft, 0, DEFAULT_DESIGN.marginRight, 14],
     stack: [
-      { canvas: [{ type: "line", x1: 0, y1: 0, x2: contentWidth, y2: 0, thickness: 0.5, color: design.mutedColor }], margin: [0, 0, 0, 6] },
+      { canvas: [{ type: "line", x1: 0, y1: 0, x2: getContentWidth(design.marginLeft, design.marginRight), y2: 0, thickness: 0.5, color: design.mutedColor }], margin: [0, 0, 0, 6] },
       { columns },
     ],
   }

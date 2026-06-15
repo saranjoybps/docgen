@@ -5,8 +5,10 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  deleteDoc,
   query,
   where,
+  orderBy,
   Timestamp,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
@@ -16,15 +18,14 @@ const GENERATED_COLLECTION = "generated_documents"
 const UPLOADED_COLLECTION = "uploaded_documents"
 
 export async function getGeneratedDocuments(employeeId?: string) {
-  const constraints: any[] = []
-  if (employeeId) {
-    constraints.push(where("employeeId", "==", employeeId))
-  }
+  const constraints: any[] = employeeId ? [where("employeeId", "==", employeeId)] : [orderBy("generatedAt", "desc")]
   const q = query(collection(db, GENERATED_COLLECTION), ...constraints)
   const snapshot = await getDocs(q)
-  return snapshot.docs
-    .map((doc) => ({ id: doc.id, ...doc.data() } as GeneratedDocument))
-    .sort((a, b) => b.generatedAt.toMillis() - a.generatedAt.toMillis())
+  const results = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as GeneratedDocument))
+  if (employeeId) {
+    results.sort((a, b) => b.generatedAt.toMillis() - a.generatedAt.toMillis())
+  }
+  return results
 }
 
 export async function saveGeneratedDocument(data: Omit<GeneratedDocument, "id" | "generatedAt">) {
@@ -36,15 +37,14 @@ export async function saveGeneratedDocument(data: Omit<GeneratedDocument, "id" |
 }
 
 export async function getUploadedDocuments(employeeId?: string) {
-  const constraints: any[] = []
-  if (employeeId) {
-    constraints.push(where("employeeId", "==", employeeId))
-  }
+  const constraints: any[] = employeeId ? [where("employeeId", "==", employeeId)] : [orderBy("uploadedAt", "desc")]
   const q = query(collection(db, UPLOADED_COLLECTION), ...constraints)
   const snapshot = await getDocs(q)
-  return snapshot.docs
-    .map((doc) => ({ id: doc.id, ...doc.data() } as UploadedDocument))
-    .sort((a, b) => b.uploadedAt.toMillis() - a.uploadedAt.toMillis())
+  const results = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as UploadedDocument))
+  if (employeeId) {
+    results.sort((a, b) => b.uploadedAt.toMillis() - a.uploadedAt.toMillis())
+  }
+  return results
 }
 
 export async function getUploadedDocument(id: string) {
@@ -66,6 +66,9 @@ export async function updateUploadedDocument(id: string, data: Partial<UploadedD
 }
 
 export async function deleteUploadedDocument(id: string) {
-  const { deleteDoc } = await import("firebase/firestore")
   await deleteDoc(doc(db, UPLOADED_COLLECTION, id))
+}
+
+export async function deleteGeneratedDocument(id: string) {
+  await deleteDoc(doc(db, GENERATED_COLLECTION, id))
 }

@@ -9,8 +9,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "DocuCraft - Document Management",
-  description: "Organization document generation and management system",
+  title: "DocuGen",
+  description: "Document generation and management system",
 }
 
 export default function RootLayout({

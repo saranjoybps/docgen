@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Pencil, Calendar, Mail, Phone, Cake, MapPin, BadgeCheck, FileText, Upload, IndianRupee, Building2, Briefcase, LogOut } from "lucide-react"
+import { ArrowLeft, Pencil, Calendar, Mail, Phone, Cake, MapPin, BadgeCheck, FileText, Upload, IndianRupee, Building2, Briefcase, LogOut, MessageSquareText, Loader2, Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getEmployee, updateEmployeeStatus } from "@/services/employees"
+import { getEmployee, updateEmployeeStatus, updateEmployeeNotes } from "@/services/employees"
 import { getSalaryStructures, deactivateSalary } from "@/services/salary"
 import { getGeneratedDocuments, getUploadedDocuments } from "@/services/documents"
 import { getCompanySettings } from "@/services/settings"
@@ -33,28 +33,35 @@ export default function EmployeeDetailPage() {
   const [documents, setDocuments] = useState<GeneratedDocument[]>([])
   const [uploads, setUploads] = useState<UploadedDocument[]>([])
   const [companyName, setCompanyName] = useState("")
+  const [notes, setNotes] = useState("")
+  const [savingNotes, setSavingNotes] = useState(false)
 
   useEffect(() => {
     const id = params.id as string
     async function load() {
-      const [emp, sals, docs, uplds] = await Promise.all([
-        getEmployee(id),
-        getSalaryStructures(id),
-        getGeneratedDocuments(id),
-        getUploadedDocuments(id),
-      ])
-      if (!emp) {
-        toast.error("Employee not found")
-        router.push("/employees")
-        return
-      }
-      setEmployee(emp)
-      setSalaries(sals)
-      setDocuments(docs)
-      setUploads(uplds)
-      if (emp.companyId) {
-        const cs = await getCompanySettings(emp.companyId)
-        setCompanyName(cs?.companyName || "")
+      try {
+        const [emp, sals, docs, uplds] = await Promise.all([
+          getEmployee(id),
+          getSalaryStructures(id),
+          getGeneratedDocuments(id),
+          getUploadedDocuments(id),
+        ])
+        if (!emp) {
+          toast.error("Employee not found")
+          router.push("/employees")
+          return
+        }
+        setEmployee(emp)
+        setNotes(emp.notes || "")
+        setSalaries(sals)
+        setDocuments(docs)
+        setUploads(uplds)
+        if (emp.companyId) {
+          const cs = await getCompanySettings(emp.companyId)
+          setCompanyName(cs?.companyName || "")
+        }
+      } catch {
+        toast.error("Failed to load employee data")
       }
     }
     load()
@@ -265,6 +272,10 @@ export default function EmployeeDetailPage() {
             <Upload className="h-4 w-4 mr-2" />
             Uploads
           </TabsTrigger>
+          <TabsTrigger value="comments">
+            <MessageSquareText className="h-4 w-4 mr-2" />
+            Comments
+          </TabsTrigger>
         </TabsList>
 
         {/* Details tab */}
@@ -435,6 +446,48 @@ export default function EmployeeDetailPage() {
               pageSizeOptions={[5, 10, 20]}
             />
           )}
+        </TabsContent>
+
+        {/* Comments tab */}
+        <TabsContent value="comments" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Notes & Comments</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={10}
+                  className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus-visible:border-zinc-400 dark:focus-visible:border-zinc-500 focus-visible:ring-3 focus-visible:ring-zinc-400/50 resize-y"
+                  placeholder="Add notes or comments about this employee..."
+                />
+                <div className="flex justify-end">
+                  <Button
+                    onClick={async () => {
+                      setSavingNotes(true)
+                      try {
+                        await updateEmployeeNotes(employee.id, notes)
+                        toast.success("Notes saved")
+                      } catch {
+                        toast.error("Failed to save notes")
+                      } finally {
+                        setSavingNotes(false)
+                      }
+                    }}
+                    disabled={savingNotes}
+                  >
+                    {savingNotes ? (
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
+                    ) : (
+                      <><Save className="h-4 w-4 mr-2" />Save Notes</>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

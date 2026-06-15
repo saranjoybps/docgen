@@ -46,6 +46,10 @@ export async function addEmployee(data: EmployeeFormData) {
   return docRef.id
 }
 
+export async function updateEmployeeNotes(id: string, notes: string) {
+  await updateDoc(doc(db, COLLECTION, id), { notes, updatedAt: Timestamp.now() })
+}
+
 export async function updateEmployee(id: string, data: Partial<EmployeeFormData>) {
   const updateData: Record<string, unknown> = { ...data, updatedAt: Timestamp.now() }
   if (data.dateOfJoining) {

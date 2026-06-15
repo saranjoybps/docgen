@@ -55,15 +55,14 @@ export function EmployeeForm({ defaultValues, onSubmit, cancelHref }: EmployeeFo
     watch,
     formState: { errors, isSubmitting },
   } = useForm<EmployeeFormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: (async (values: any) => {
       const parsed = employeeSchema.safeParse(values)
       if (parsed.success) return { values: parsed.data, errors: {} }
-      const errors: Record<string, { message: string }> = {}
+      const fieldErrors: Record<string, { message: string }> = {}
       for (const issue of parsed.error.issues) {
-        if (issue.path[0]) errors[issue.path[0] as string] = { message: issue.message }
+        if (issue.path[0]) fieldErrors[issue.path[0] as string] = { message: issue.message }
       }
-      return { values, errors }
+      return { values: {} as Record<string, never>, errors: fieldErrors }
     }) as any,
     defaultValues: {
       firstName: "",
