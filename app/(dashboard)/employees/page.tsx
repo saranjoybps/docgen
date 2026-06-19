@@ -12,6 +12,7 @@ import { listCompanySettings } from "@/services/settings"
 import type { Employee } from "@/lib/types"
 import { toast } from "sonner"
 import { downloadSampleExcel, parseEmployeeExcel, importEmployees, exportEmployeesToExcel } from "@/lib/excel-utils"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { format } from "date-fns"
 
 const statusColor: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -23,7 +24,7 @@ const statusColor: Record<string, "default" | "secondary" | "destructive" | "out
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([])
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [importOpen, setImportOpen] = useState(false)
   const [importFile, setImportFile] = useState<File | null>(null)
   const [importing, setImporting] = useState(false)
@@ -37,10 +38,6 @@ export default function EmployeesPage() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    if (deleting !== id) {
-      setDeleting(id)
-      return
-    }
     try {
       await deleteEmployee(id)
       toast.success("Employee deleted")
@@ -48,7 +45,7 @@ export default function EmployeesPage() {
     } catch {
       toast.error("Failed to delete")
     }
-    setDeleting(null)
+    setDeleteTarget(null)
   }
 
   const handleExport = async () => {
@@ -180,9 +177,9 @@ export default function EmployeesPage() {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button
-            variant={deleting === e.id ? "destructive" : "ghost"}
+            variant="ghost"
             size="icon"
-            onClick={() => handleDelete(e.id)}
+            onClick={() => setDeleteTarget(e.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -382,6 +379,14 @@ export default function EmployeesPage() {
             filterFn: (e, v) => e.status === v,
           },
         ]}
+      />
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
+        title="Delete Employee"
+        message="Are you sure you want to delete this employee? This action cannot be undone."
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
       />
     </div>
   )

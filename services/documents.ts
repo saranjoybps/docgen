@@ -22,10 +22,11 @@ export async function getGeneratedDocuments(employeeId?: string) {
   const q = query(collection(db, GENERATED_COLLECTION), ...constraints)
   const snapshot = await getDocs(q)
   const results = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as GeneratedDocument))
+  const filtered = results.filter((doc) => !doc.isDeleted)
   if (employeeId) {
-    results.sort((a, b) => b.generatedAt.toMillis() - a.generatedAt.toMillis())
+    filtered.sort((a, b) => b.generatedAt.toMillis() - a.generatedAt.toMillis())
   }
-  return results
+  return filtered
 }
 
 export async function saveGeneratedDocument(data: Omit<GeneratedDocument, "id" | "generatedAt">) {
@@ -41,10 +42,11 @@ export async function getUploadedDocuments(employeeId?: string) {
   const q = query(collection(db, UPLOADED_COLLECTION), ...constraints)
   const snapshot = await getDocs(q)
   const results = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as UploadedDocument))
+  const filtered = results.filter((doc) => !doc.isDeleted)
   if (employeeId) {
-    results.sort((a, b) => b.uploadedAt.toMillis() - a.uploadedAt.toMillis())
+    filtered.sort((a, b) => b.uploadedAt.toMillis() - a.uploadedAt.toMillis())
   }
-  return results
+  return filtered
 }
 
 export async function getUploadedDocument(id: string) {

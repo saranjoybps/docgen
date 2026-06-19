@@ -1,0 +1,210 @@
+[
+  {
+    "id": "2a3IrvzeAtBO6iBtEdkJ",
+    "name": "Offer Letter",
+    "type": "offer_letter",
+    "isDefault": true,
+    "createdAt": {
+      "_seconds": 1781169584,
+      "_nanoseconds": 119000000
+    },
+    "variables": [
+      "date",
+      "employeeName",
+      "employeeAddress",
+      "companyName",
+      "designation",
+      "department",
+      "managerName",
+      "workLocation",
+      "dateOfJoining",
+      "employeeId",
+      "basicPay",
+      "hra",
+      "specialAllowance",
+      "performanceAllowance",
+      "otherComponents",
+      "grossSalary",
+      "annualCtc",
+      "probationPeriod",
+      "employeeNoticePeriod",
+      "companyNoticePeriod"
+    ],
+    "content": "Date: {date}\n\nTo,\n{employeeName}\n{employeeAddress}\n\nSubject: Offer of Employment\n\nDear {employeeName},\n\nWe are pleased to offer you employment with {companyName} as {designation}. We believe your skills, experience, and enthusiasm will contribute significantly to our organization's continued growth and success.\n\nThe details of your employment are outlined below.\n\n1. APPOINTMENT DETAILS:\n| Particulars | Details |\n| Employee Name | {employeeName} |\n| Designation | {designation} |\n| Department | {department} |\n| Reporting Manager | {managerName} |\n| Employment Type | Full-Time |\n| Work Location | {workLocation} |\n| Joining Date | {dateOfJoining} |\n| Employee ID | {employeeId} |\n\n2. COMPENSATION:\nYour compensation package shall be as follows:\n| Component | Monthly (INR) |\n| Basic Salary | {basicPay} |\n| House Rent Allowance | {hra} |\n| Special Allowance | {specialAllowance} |\n| Performance Allowance | {performanceAllowance} |\n| Other Components | {otherComponents} |\n| Gross Monthly Salary | {grossSalary} |\n| Annual CTC | {annualCtc} |\n\nThe compensation structure may be reviewed periodically based on business requirements and employee performance.\n\nAll compensation-related information is strictly confidential and must not be disclosed to any employee, customer, vendor, competitor, or third party.\n\n3. PROBATION PERIOD:\nYour employment shall initially be subject to a probation period of {probationPeriod} commencing from your date of joining.\n\nThe Company reserves the right to:\n- Confirm your employment upon satisfactory performance.\n- Extend the probation period if deemed necessary.\n- Terminate employment during probation if performance, conduct, attendance, or suitability is found unsatisfactory.\n\nDuring probation, either party may terminate employment by providing 15 days written notice or salary in lieu thereof.\n\n4. DUTIES AND RESPONSIBILITIES:\nYou shall faithfully perform duties assigned to you from time to time.\n\nThe Company reserves the right to modify, expand, transfer, or reassign responsibilities based on business requirements.\n\nYou shall:\n- Maintain professional conduct.\n- Follow all company policies.\n- Meet assigned performance standards.\n- Maintain confidentiality.\n- Act in the best interests of the Company and its clients.\n\n5. CONFIDENTIALITY AND NON-DISCLOSURE:\nDuring and after your employment, you shall maintain strict confidentiality regarding any information belonging to the Company, its clients, vendors, partners, affiliates, and employees.\n\nConfidential Information includes but is not limited to:\n- Business plans, sales strategies, pricing structures, contracts\n- Customer databases, contact details, customer records\n- Source code, software applications, APIs, database structures\n- Campaign strategies, lead databases, SEO methodologies\n\nYou shall not disclose, reproduce, copy, distribute, transmit, store, or use such information except for authorized business purposes.\n\nThese obligations shall survive termination of employment indefinitely.\n\n6. INTELLECTUAL PROPERTY RIGHTS:\nAll inventions, developments, software, applications, code, scripts, automation workflows, AI models, prompts, content, designs, graphics, documentation, reports, databases, marketing assets, business processes, methodologies, improvements, and related work products created during the course of employment shall remain the sole and exclusive property of the Company.\n\nThe Employee hereby irrevocably assigns all rights, title, and interests in such intellectual property to the Company.\n\n7. DATA SECURITY:\nThe Employee shall:\n- Protect company information from unauthorized access.\n- Not share passwords or credentials.\n- Not copy company data to personal devices without authorization.\n- Not use unauthorized software.\n- Not upload confidential information to external AI tools or third-party platforms without approval.\n- Comply with all information security policies.\n\nAny breach of information security may result in disciplinary action, including termination and legal proceedings.\n\n8. CONFLICT OF INTEREST:\nDuring employment, you shall not:\n- Engage in competing businesses.\n- Provide consulting services to competitors.\n- Undertake freelance assignments without written approval.\n- Accept outside employment without prior written authorization.\n- Engage in activities that may create a conflict of interest.\n\n9. NON-SOLICITATION:\nDuring employment and for a period of twenty-four (24) months following separation from the Company, you shall not directly or indirectly:\n- Solicit Company clients or divert Company clients.\n- Recruit Company employees or encourage employees to resign.\n- Interfere with vendor relationships or divert business partners.\n\n10. COMPANY PROPERTY:\nAll assets provided by the Company remain Company property at all times. This includes laptops, mobile devices, headsets, SIM cards, access cards, software licenses, documents, training materials, customer data, and source code repositories.\n\nAll Company property must be returned immediately upon request or separation from employment.\n\n11. ATTENDANCE AND LEAVE:\nEmployees are expected to maintain regular attendance and punctuality. Leave shall be governed by Company policies applicable from time to time. Unauthorized absence for more than seven (7) consecutive days may be treated as abandonment of employment.\n\n12. MONITORING AND COMPLIANCE:\nThe Employee acknowledges that Company-owned devices, systems, communication channels, applications, emails, CRM platforms, support systems, and business tools may be monitored, audited, and reviewed for security purposes, regulatory compliance, customer service quality, business continuity, and protection of Company assets.\n\n13. TERMINATION:\nFollowing confirmation of employment:\n- Employee Notice Period: {employeeNoticePeriod}\n- Company Notice Period: {companyNoticePeriod}\n\nThe Company reserves the right to terminate employment without notice in cases involving fraud, theft, data breaches, misconduct, harassment, gross negligence, security violations, unauthorized disclosure of confidential information, or violation of Company policies.\n\n14. GOVERNING POLICIES:\nYou shall be bound by all policies, manuals, procedures, employee handbooks, information security requirements, and operational guidelines issued by the Company from time to time.\n\n15. ACCEPTANCE OF OFFER:\nPlease sign and return a copy of this letter as confirmation of your acceptance of the terms and conditions contained herein.\n\nWe look forward to a long and mutually rewarding association with you.\n\nEMPLOYEE ACCEPTANCE\n\nI, {employeeName}, have read, understood, and accepted the terms and conditions stated in this Offer of Employment.\n\nEmployee Signature: __________________\n\nName: __________________\n\nDate: __________________",
+    "updatedAt": {
+      "_seconds": 1781514586,
+      "_nanoseconds": 393000000
+    }
+  },
+  {
+    "id": "3KSDU5KnHbGWtjf1lyHb",
+    "name": "Employeement Agreement",
+    "createdAt": {
+      "_seconds": 1781179383,
+      "_nanoseconds": 441000000
+    },
+    "variables": [
+      "companyName",
+      "employeeName",
+      "designation",
+      "dateOfJoining"
+    ],
+    "content": "This Employment Agreement (\"Agreement\") is entered into between:\n\n{companyName},\n\nAND\n\n{employeeName},\n\n1. Appointment\nThe Company appoints the Employee as {designation} effective {dateOfJoining}.\n\n2. Duties and Responsibilities\nThe Employee shall:\n- Perform duties assigned by management.\n- Follow company policies and procedures.\n- Maintain professional conduct.\n- Meet performance expectations and KPIs.\n- Protect company interests at all times.\n\n3. Working Hours\nNormal working hours shall be determined by business requirements and may vary depending on client projects, support schedules, contact center operations, or development activities.\n\n4. Compensation\nThe Employee shall receive compensation as specified in the Offer Letter.\n\n5. Confidential Information\nThe Employee shall maintain confidentiality regarding:\n- Customer information\n- Source code\n- Business strategies\n- Marketing plans\n- Financial information\n- AI systems and workflows\n- Internal documentation\n\nThis obligation survives termination of employment.\n\n6. Intellectual Property\nAll work products developed during employment shall be the exclusive property of the Company.\n\n7. Conflict of Interest\nThe Employee shall not engage in activities that conflict with Company interests.\n\n8. Company Property\nAll company property shall be returned upon separation.\n\n9. Termination\nEither party may terminate employment by providing applicable notice.\n\nThe Company may terminate employment immediately for misconduct, fraud, security violations, data theft, harassment, or breach of confidentiality.\n\n10. Governing Law\nThis Agreement shall be governed by applicable laws and courts having jurisdiction over the Company's registered office.\n\nEmployee Signature: __________________",
+    "updatedAt": {
+      "_seconds": 1781514889,
+      "_nanoseconds": 813000000
+    }
+  },
+  {
+    "id": "7grsZhiIpEQkvHAB356e",
+    "name": "Contract Agreement",
+    "createdAt": {
+      "_seconds": 1781513343,
+      "_nanoseconds": 840000000
+    },
+    "variables": [
+      "date",
+      "companyName",
+      "companyRegistrationInfo",
+      "companyAddress",
+      "employeeName",
+      "employeeAddress",
+      "designation",
+      "dateOfJoining",
+      "contractTerm",
+      "penaltyAmount",
+      "employeeNoticePeriod",
+      "jurisdictionCity"
+    ],
+    "content": "This Employment Agreement (\"Agreement\") is made and entered into on this {date} (\"Effective Date\") by and between:\n\n{companyName}, {companyRegistrationInfo}, having its registered office at {companyAddress} (hereinafter referred to as the \"Employer\" which expression shall, unless repugnant to the context or meaning thereof, be deemed to mean and include its successors and permitted assigns);\n\nAND\n\n{employeeName}, residing at {employeeAddress} (hereinafter referred to as the \"Employee\" which expression shall, unless repugnant to the context or meaning thereof, be deemed to mean and include his/her heirs, executors, administrators, and permitted assigns).\n\nWHEREAS, the Employer desires to employ the Employee, and the Employee desires to accept employment with the Employer on the terms and conditions set forth herein.\n\nNOW, THEREFORE, in consideration of the mutual covenants and promises herein contained, the parties agree as follows:\n\n1. Position\n1.1 The Employee is hereby appointed as {designation}.\n\n2. Term of Employment\n2.1 This Agreement shall commence on {dateOfJoining} and shall remain in force for a period of {contractTerm} unless terminated earlier in accordance with the terms of this Agreement.\n\n3. Employment at Will\n3.1 The Employee acknowledges that the employment with the Employer is \"at-will,\" meaning that either the Employer or the Employee may terminate the employment relationship at any time, with or without cause, and with or without notice.\n3.2 In the event the Employee terminates the employment before the completion of {contractTerm}, the Employee shall pay the Employer a penalty of {penaltyAmount}.\n\n4. Non-Compete Clause\n4.1 During the term of this Agreement and after the termination of employment, the Employee agrees not to engage in, whether directly or indirectly, any business or employment that competes with the business of the Employer.\n4.2 The Employee acknowledges that the restrictions contained in this clause are reasonable and necessary to protect the legitimate interests of the Employer.\n\n5. Confidentiality and Protection of Customer Data\n5.1 The Employee agrees to maintain the confidentiality of all proprietary information, trade secrets, and customer data obtained during the course of employment.\n5.2 The Employee shall not, during or after the term of this Agreement, disclose such confidential information to any third party without the prior written consent of the Employer.\n5.3 The Employee shall take all necessary precautions to protect customer data from unauthorized access, use, or disclosure.\n\n6. Termination\n6.1 The Employer reserves the right to terminate this Agreement at any time, with or without cause, and with or without notice.\n6.2 The Employee may terminate this Agreement by providing {employeeNoticePeriod} written notice to the Employer. However, if the Employee terminates the Agreement before the completion of {contractTerm}, the penalty clause as mentioned in Section 3.2 shall apply.\n\n7. Governing Law and Dispute Resolution\n7.1 This Agreement shall be governed by and construed in accordance with the laws of India.\n7.2 Any disputes arising out of or in connection with this Agreement shall be subject to the exclusive jurisdiction of the courts of {jurisdictionCity}.\n\n8. Miscellaneous\n8.1 This Agreement constitutes the entire agreement between the parties and supersedes all prior agreements or understandings, whether written or oral.\n8.2 Any amendments or modifications to this Agreement must be in writing and signed by both parties.\n\nIN WITNESS WHEREOF, the parties hereto have executed this Agreement as of the day and year first above written.",
+    "updatedAt": {
+      "_seconds": 1781516063,
+      "_nanoseconds": 35000000
+    }
+  },
+  {
+    "id": "7iCYteYF4TtEE7wqGUOH",
+    "type": "increment_letter",
+    "isDefault": true,
+    "createdAt": {
+      "_seconds": 1781169584,
+      "_nanoseconds": 333000000
+    },
+    "variables": [
+      "date",
+      "companyName",
+      "companyAddress",
+      "employeeName",
+      "employeeAddress",
+      "designation",
+      "department",
+      "dateOfJoining",
+      "restrictionPeriod",
+      "lookbackPeriod",
+      "nonSolicitHiringGap",
+      "jurisdiction"
+    ],
+    "name": "Intellectual Property & Non-Solicitation Agreement",
+    "content": "Date: {date}\n\nThis Intellectual Property & Non-Solicitation Agreement (the \"Agreement\") is entered into by and between:\n\n{companyName}, having its registered office at {companyAddress} (hereinafter referred to as the \"Company\")\n\nAND\n\n{employeeName}, residing at {employeeAddress} (hereinafter referred to as the \"Employee\")\n\nWHEREAS, the Employee is employed by the Company as {designation} in the {department} department effective from {dateOfJoining} (the \"Employment\");\n\nWHEREAS, during the course of Employment, the Employee may create, develop, or contribute to intellectual property and will have access to confidential business relationships of the Company;\n\nNOW, THEREFORE, in consideration of the Employment and the compensation provided therein, the parties agree as follows:\n\n1. Intellectual Property Rights\n\nThe Company and the Employee acknowledge and agree as follows regarding intellectual property:\n\na) Definitions: \"Intellectual Property\" means all inventions, discoveries, improvements, designs, patents, copyrights, trademarks, trade secrets, know-how, algorithms, software, databases, methodologies, business processes, technical data, specifications, formulae, drawings, diagrams, and any other proprietary information or materials, whether or not patentable or copyrightable.\n\nb) Company IP: All Intellectual Property created, conceived, developed, reduced to practice, or contributed to by the Employee, either solely or jointly with others, during the period of Employment, that relates to the Company's business, actual or anticipated research, or development, or that results from any work performed using Company resources, facilities, or confidential information, shall be the sole and exclusive property of the Company (\"Company Intellectual Property\").\n\nc) Pre-Existing IP: The Employee represents that any Intellectual Property owned by the Employee prior to Employment (\"Pre-Existing IP\") has been disclosed to the Company in writing. The Employee grants the Company a perpetual, irrevocable, royalty-free, worldwide license to use, modify, and incorporate any Pre-Existing IP that is used in or relates to the Company's business.\n\nd) Moral Rights: To the extent permitted by law, the Employee waives any moral rights, droit moral, or similar rights in any Company Intellectual Property created during Employment.\n\ne) Further Assurances: The Employee agrees to execute all documents, provide all assistance, and take all steps reasonably requested by the Company to perfect, protect, register, and enforce the Company's rights in Company Intellectual Property, both during and after Employment.\n\n2. Assignment of Rights\n\nThe Employee irrevocably assigns and transfers to the Company all right, title, and interest in and to Company Intellectual Property, including without limitation:\n\na) All patents, patent applications, utility models, and industrial designs that may be filed in any country based on or claiming priority from Company Intellectual Property\nb) All copyrights, including but not limited to copyrights in software, documentation, reports, presentations, designs, drawings, and literary works\nc) All trade secrets, confidential information, and know-how\nd) All trademarks, service marks, trade names, and domain names\ne) All database rights, data compilations, and data collections\n\nThe Employee agrees that all copyrightable works created during Employment are \"works made for hire\" within the meaning of applicable copyright law and are the exclusive property of the Company.\n\nThe Employee shall promptly and fully disclose to the Company all Company Intellectual Property and shall execute all assignment documents, declarations, oaths, and other instruments as may be necessary to vest title in the Company and to enable the Company to apply for, prosecute, obtain, maintain, and enforce intellectual property protection worldwide.\n\nThe Employee appoints the Company as the Employee's attorney-in-fact to execute any such documents on the Employee's behalf if the Employee fails or is unable to do so within a reasonable time. This appointment is coupled with an interest and is irrevocable.\n\n3. Client Solicitation Restrictions\n\nThe Employee agrees that during Employment and for a period of {restrictionPeriod} months immediately following termination of Employment (the \"Restricted Period\"), the Employee shall not, directly or indirectly:\n\na) Solicit, contact, approach, or communicate with any Client of the Company for the purpose of offering or providing products or services that are competitive with those offered by the Company\nb) Accept, engage in, or perform any work or services for any Client of the Company that is competitive with the business of the Company\nc) Induce or attempt to induce any Client of the Company to reduce, terminate, or modify its business relationship with the Company\nd) Provide any products or services to any Client of the Company that are similar to or competitive with the products or services provided by the Company\n\nFor purposes of this Agreement, \"Client\" means any person or entity that was a client or customer of the Company during the {lookbackPeriod} months preceding termination of Employment and with whom the Employee had material contact or about whom the Employee obtained confidential information during Employment.\n\n4. Employee Solicitation Restrictions\n\nThe Employee agrees that during the Restricted Period, the Employee shall not, directly or indirectly:\n\na) Solicit, induce, recruit, or encourage any employee of the Company to terminate their employment with the Company\nb) Hire, engage, or retain any employee of the Company, whether as an employee, consultant, contractor, or otherwise\nc) Participate in any hiring, recruitment, or solicitation efforts targeting employees of the Company on behalf of any other business or entity\nd) Induce or attempt to induce any employee of the Company to join any business that is competitive with the Company\ne) Disclose the names, qualifications, or contact information of any Company employee to any third party for recruitment purposes\n\nThis restriction applies to any person who was employed by the Company at the time of termination of the Employee's Employment or at any time during the {lookbackPeriod} months preceding such termination.\n\nNothing in this Section shall prohibit the Employee from hiring any person who (i) has not been employed by the Company for at least {nonSolicitHiringGap} months, or (ii) initiates contact with the Employee without any direct or indirect solicitation by the Employee.\n\n5. Vendor Solicitation Restrictions\n\nThe Employee agrees that during the Restricted Period, the Employee shall not, directly or indirectly:\n\na) Solicit, induce, or encourage any Vendor of the Company to terminate, reduce, or materially alter its business relationship with the Company\nb) Contact or communicate with any Vendor of the Company for the purpose of obtaining products or services for any business that is competitive with the Company\nc) Induce or attempt to induce any Vendor of the Company to refuse to do business with the Company or to limit the scope or terms of such business\nd) Use any confidential information regarding the Company's pricing, terms, or arrangements with Vendors to solicit or obtain competitive advantages\n\nFor purposes of this Agreement, \"Vendor\" means any supplier, service provider, consultant, contractor, distributor, or business partner that provided goods or services to the Company during the {lookbackPeriod} months preceding termination of Employment and with whom the Employee had material contact or about whom the Employee obtained confidential information during Employment.\n\nThe Employee acknowledges that the restrictions in this Section are necessary to protect the Company's legitimate business interests, including its confidential relationships with Vendors, pricing strategies, and supply chain arrangements.\n\nGeneral Provisions\n\nThe parties acknowledge that the restrictions contained in this Agreement are reasonable in scope, duration, and geographic area and are necessary to protect the legitimate business interests of the Company. The Employee acknowledges that the compensation and benefits provided under the Employment Agreement are adequate consideration for these restrictions.\n\nIf any provision of this Agreement is held to be invalid, illegal, or unenforceable, the remaining provisions shall continue in full force and effect. Any court of competent jurisdiction may modify or reform any unenforceable provision to the maximum extent permitted by law.\n\nAny breach of this Agreement by the Employee may result in irreparable harm to the Company, and the Company shall be entitled to seek injunctive relief in addition to any other remedies available at law.\n\nThis Agreement shall be governed by the laws of {jurisdiction}. This Agreement constitutes the entire understanding between the parties regarding intellectual property and non-solicitation obligations and supersedes all prior agreements, written or oral.\n\nIN WITNESS WHEREOF, the parties have executed this Agreement as of the date first above written.\n\n_______________________                    _______________________\nFor {companyName}                         {employeeName}\n(Authorized Signatory)                    (Employee)\n\nWitness 1: _______________               Witness 2: _______________\nName: ___________________               Name: ___________________",
+    "updatedAt": {
+      "_seconds": 1781179708,
+      "_nanoseconds": 288000000
+    }
+  },
+  {
+    "id": "8TYf2KCmf6DPnseigqkn",
+    "type": "experience_letter",
+    "isDefault": true,
+    "createdAt": {
+      "_seconds": 1781169584,
+      "_nanoseconds": 357000000
+    },
+    "name": "Code of Conduct & Ethics Declaration",
+    "variables": [],
+    "content": "The Company expects all employees to uphold the highest standards of integrity and professionalism.\n\nEmployee Responsibilities\nThe Employee shall:\n- Treat colleagues, customers, and vendors respectfully.\n- Avoid harassment or discrimination.\n- Protect company property.\n- Protect confidential information.\n- Follow lawful and ethical business practices.\n- Avoid conflicts of interest.\n\nProhibited Conduct\nThe following may result in disciplinary action:\n- Fraud\n- Theft\n- Misrepresentation\n- Data theft\n- Customer poaching\n- Employee poaching\n- Unauthorized disclosure of information\n- Substance abuse during working hours\n- Workplace harassment\n\nReporting Violations\nEmployees are encouraged to report suspected violations of company policies, security concerns, unethical conduct, or legal non-compliance.\n\nAcknowledgement\nI have read and understood the Company's Code of Conduct and agree to comply with all requirements.\n\nEmployee Signature: __________________\n\nAuthorized Signatory: __________________",
+    "updatedAt": {
+      "_seconds": 1781512579,
+      "_nanoseconds": 505000000
+    }
+  },
+  {
+    "id": "9OvUaUYg7oPQGOseZmTb",
+    "type": "relieving_letter",
+    "isDefault": true,
+    "createdAt": {
+      "_seconds": 1781169584,
+      "_nanoseconds": 442000000
+    },
+    "name": "Increment Letter",
+    "variables": [
+      "employeeName",
+      "designation",
+      "effectiveDate",
+      "companyName",
+      "annualCtc"
+    ],
+    "content": "{employeeName},\n\nCongratulations!\n\nWe are delighted to inform you of your promotion to the position of {designation}, effective {effectiveDate}. This promotion is a recognition of your hard work, dedication, and the significant contributions you have made to the Maintenance team at {companyName}.\n\nIn line with your promotion, we are pleased to also offer you a salary increment. Your new annual salary will be {annualCtc}. This adjustment will also take effect on {effectiveDate}.\n\nYour commitment to {companyName} has been exemplary, and we are confident that you will continue to bring the same level of excellence to your new role.\n\nWe are excited about your future with {companyName} and look forward to your continued success.\n\nCongratulations, and thank you for your outstanding contributions to our team!\n\nWishing you the very best and looking forward to a mutually beneficial relationship.",
+    "updatedAt": {
+      "_seconds": 1781516022,
+      "_nanoseconds": 595000000
+    }
+  },
+  {
+    "id": "FOztSJjvDn3mPZKVmXEZ",
+    "type": "payslip",
+    "isDefault": true,
+    "createdAt": {
+      "_seconds": 1781169584,
+      "_nanoseconds": 559000000
+    },
+    "name": "Information Security & IT Asset Agreement",
+    "variables": [
+      "employeeName",
+      "designation",
+      "date",
+      "employeeId"
+    ],
+    "content": "Employee Name: {employeeName}\n\nDesignation: {designation}\n\nDate: {date}\n\nI acknowledge that I have received and understood the Company's Information Security Policy.\n\nI agree to:\n- Use only authorized software.\n- Protect passwords and credentials.\n- Enable device security controls.\n- Report security incidents immediately.\n- Protect customer information.\n- Protect company intellectual property.\n- Comply with all cybersecurity requirements.\n\nI understand that violations may result in disciplinary action including termination.\n\nEmployee Signature: __________________\n\nAuthorized Signatory: __________________\n\n\nIT ASSET USAGE AGREEMENT\n\nEmployee Name: {employeeName}\n\nEmployee ID: {employeeId}\n\nDesignation: {designation}\n\nAssigned Assets\n| Asset Type | Asset ID | Serial Number |\n| Laptop | — | — |\n| Charger | — | — |\n| Headset | — | — |\n| Mobile Device | — | — |\n| SIM Card | — | — |\n\nEmployee Responsibilities\nThe Employee agrees:\n- To use assets only for official business.\n- Not to install unauthorized software.\n- Not to share devices with third parties.\n- To report loss, theft, or damage immediately.\n- To maintain proper care of assigned equipment.\n\nAsset Return\nAll assets shall be returned upon resignation, termination, transfer, or upon company request.\n\nEmployee Signature: __________________\n\nAuthorized Signatory: __________________",
+    "updatedAt": {
+      "_seconds": 1781512000,
+      "_nanoseconds": 952000000
+    }
+  },
+  {
+    "id": "MGzShrrn4HHU1RiLnCiR",
+    "name": "Experience Letter",
+    "createdAt": {
+      "_seconds": 1781180076,
+      "_nanoseconds": 889000000
+    },
+    "variables": [
+      "employeeName",
+      "dateOfJoining",
+      "relievingDate",
+      "designation",
+      "companyName"
+    ],
+    "content": "This is to certify that, {employeeName} had been working with us since {dateOfJoining} till {relievingDate} as {designation}.\n\nHer contributions to the organization and its success will always be appreciated.\n\nWe wish her all success in her future endeavours.\n\nFor {companyName}",
+    "updatedAt": {
+      "_seconds": 1781515836,
+      "_nanoseconds": 707000000
+    }
+  },
+  {
+    "id": "e9weVKQCRegg8nOyxCss",
+    "createdAt": {
+      "_seconds": 1781179536,
+      "_nanoseconds": 57000000
+    },
+    "variables": [
+      "companyName",
+      "employeeName"
+    ],
+    "name": "Non - Disclosure and Confidentiality Agreement",
+    "content": "This Agreement is entered into between:\n\n{companyName}\n\nAND\n\n{employeeName}\n\nConfidential Information\nThe Employee acknowledges access to confidential information including:\n- Client databases\n- Customer records\n- Call recordings\n- CRM information\n- Source code\n- APIs\n- Cloud infrastructure\n- AI models\n- AI prompts\n- Agent configurations\n- Marketing campaigns\n- Financial information\n- Vendor information\n- Internal SOPs\n\nEmployee Obligations:\nThe Employee agrees:\n- Not to disclose confidential information.\n- Not to copy company data without authorization.\n- Not to share information with competitors.\n- Not to retain company information after separation.\n\nRestricted Activities:\nThe Employee shall not:\n- Upload company data to personal cloud storage.\n- Transfer data to personal devices.\n- Use company information for personal benefit.\n- Share credentials or passwords.\n\nSurvival Clause:\nConfidentiality obligations shall continue indefinitely after termination of employment.\n\nRemedies:\nThe Company shall be entitled to seek injunctive relief, damages, and legal remedies for violations.\n\nEmployee Signature: __________________",
+    "updatedAt": {
+      "_seconds": 1781515075,
+      "_nanoseconds": 938000000
+    }
+  }
+]

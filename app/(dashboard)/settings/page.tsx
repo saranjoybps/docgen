@@ -36,6 +36,7 @@ import Link from "next/link"
 import { Switch } from "@/components/ui/switch"
 import { generateDocumentPdfBlob } from "@/lib/pdf-document"
 import type { CompanySettings } from "@/lib/types"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 const settingsSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
@@ -66,7 +67,7 @@ type SettingsFormData = z.infer<typeof settingsSchema>
 export default function SettingsPage() {
   const [companies, setCompanies] = useState<(CompanySettings & { id: string })[]>([])
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [view, setView] = useState<"list" | "detail">("list")
   const [logoUrl, setLogoUrl] = useState("")
   const [logoPublicId, setLogoPublicId] = useState("")
@@ -316,7 +317,7 @@ export default function SettingsPage() {
       console.error("Failed to delete company:", err)
       toast.error("Failed to delete company")
     }
-    setDeleting(null)
+    setDeleteTarget(null)
   }
 
   const generateDesignPreview = async () => {
@@ -423,15 +424,9 @@ export default function SettingsPage() {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button
-            variant={deleting === c.id ? "destructive" : "ghost"}
+            variant="ghost"
             size="icon"
-            onClick={() => {
-              if (deleting !== c.id) {
-                setDeleting(c.id)
-              } else {
-                handleDeleteCompany(c.id)
-              }
-            }}
+            onClick={() => setDeleteTarget(c.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -894,6 +889,14 @@ export default function SettingsPage() {
           pageSizeOptions={[10, 20, 50]}
         />
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
+        title="Delete Company"
+        message="Are you sure you want to delete this company? This action cannot be undone."
+        onConfirm={() => deleteTarget && handleDeleteCompany(deleteTarget)}
+      />
     </div>
   )
 }

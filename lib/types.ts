@@ -203,6 +203,7 @@ export interface GeneratedDocument {
   cloudinaryPublicId: string
   metadata: Record<string, string>
   generatedAt: Timestamp
+  isDeleted?: boolean
 }
 
 export interface UploadedDocument {
@@ -214,6 +215,7 @@ export interface UploadedDocument {
   cloudinaryPublicId: string
   uploadedAt: Timestamp
   uploadedBy: string
+  isDeleted?: boolean
 }
 
 export interface CompanySettings {

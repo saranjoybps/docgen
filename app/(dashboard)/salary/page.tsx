@@ -11,12 +11,13 @@ import type { Employee, SalaryStructure } from "@/lib/types"
 import { format } from "date-fns"
 import { toast } from "sonner"
 import { Plus, Pencil, Trash2 } from "lucide-react"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 export default function SalaryPage() {
   const searchParams = useSearchParams()
   const [employees, setEmployees] = useState<Employee[]>([])
   const [salaries, setSalaries] = useState<SalaryStructure[]>([])
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
   const employeeMap = useMemo(() => {
     const map = new Map<string, Employee>()
@@ -34,10 +35,6 @@ export default function SalaryPage() {
   }, [searchParams])
 
   const handleDelete = async (id: string) => {
-    if (deleting !== id) {
-      setDeleting(id)
-      return
-    }
     try {
       await deleteSalaryStructure(id)
       toast.success("Salary structure deleted")
@@ -45,7 +42,7 @@ export default function SalaryPage() {
     } catch {
       toast.error("Failed to delete")
     }
-    setDeleting(null)
+    setDeleteTarget(null)
   }
 
   const columns: Column<SalaryStructure>[] = [
@@ -99,9 +96,9 @@ export default function SalaryPage() {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button
-            variant={deleting === s.id ? "destructive" : "ghost"}
+            variant="ghost"
             size="icon"
-            onClick={() => handleDelete(s.id)}
+            onClick={() => setDeleteTarget(s.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -157,6 +154,14 @@ export default function SalaryPage() {
               ]
             : undefined
         }
+      />
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
+        title="Delete Salary Structure"
+        message="Are you sure you want to delete this salary structure? This action cannot be undone."
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
       />
     </div>
   )

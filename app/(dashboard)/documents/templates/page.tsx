@@ -9,10 +9,11 @@ import type { DocumentTemplate } from "@/lib/types"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { Plus, Pencil, Trash2, FileText } from "lucide-react"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<DocumentTemplate[]>([])
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -23,10 +24,6 @@ export default function TemplatesPage() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    if (deleting !== id) {
-      setDeleting(id)
-      return
-    }
     try {
       await deleteTemplate(id)
       toast.success("Template deleted")
@@ -34,7 +31,7 @@ export default function TemplatesPage() {
     } catch {
       toast.error("Failed to delete template")
     }
-    setDeleting(null)
+    setDeleteTarget(null)
   }
 
   const columns: Column<DocumentTemplate>[] = [
@@ -72,9 +69,9 @@ export default function TemplatesPage() {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button
-            variant={deleting === t.id ? "destructive" : "ghost"}
+            variant="ghost"
             size="icon"
-            onClick={() => handleDelete(t.id)}
+            onClick={() => setDeleteTarget(t.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -106,6 +103,14 @@ export default function TemplatesPage() {
         searchPlaceholder="Search templates..."
         searchFn={(t, q) => t.name.toLowerCase().includes(q)}
         pageSizeOptions={[10, 20, 50]}
+      />
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
+        title="Delete Template"
+        message="Are you sure you want to delete this template? This action cannot be undone."
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
       />
     </div>
   )

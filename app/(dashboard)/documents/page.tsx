@@ -28,6 +28,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { generateDocumentPdfBlob } from "@/lib/pdf-document"
 import Link from "next/link"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 import type { Resolver } from "react-hook-form"
 
@@ -63,11 +64,11 @@ export default function DocumentsPage() {
   const [customValues, setCustomValues] = useState<Record<string, string>>({})
   const previewUrlRef = useRef<string | null>(null)
 
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteTargetTemplate, setDeleteTargetTemplate] = useState<string | null>(null)
   const [templatesLoading, setTemplatesLoading] = useState(true)
   const [generatedDocs, setGeneratedDocs] = useState<GeneratedDocument[]>([])
   const [generatedDocsLoading, setGeneratedDocsLoading] = useState(true)
-  const [deletingDoc, setDeletingDoc] = useState<string | null>(null)
+  const [deleteTargetDoc, setDeleteTargetDoc] = useState<{ id: string; cloudinaryPublicId: string } | null>(null)
 
   const {
     setValue,
@@ -358,7 +359,6 @@ export default function DocumentsPage() {
   const noCompany = selectedEmployee && !selectedEmployee.companyId
 
   const handleDeleteTemplate = async (id: string) => {
-    if (deleting !== id) { setDeleting(id); return }
     try {
       await deleteTemplate(id)
       toast.success("Template deleted")
@@ -366,19 +366,27 @@ export default function DocumentsPage() {
     } catch {
       toast.error("Failed to delete template")
     }
-    setDeleting(null)
+    setDeleteTargetTemplate(null)
   }
 
-  const handleDeleteGeneratedDoc = async (id: string) => {
-    if (deletingDoc !== id) { setDeletingDoc(id); return }
+  const handleDeleteGeneratedDoc = async (id: string, cloudinaryPublicId: string) => {
     try {
       await deleteGeneratedDocument(id)
-      toast.success("Document deleted")
       setGeneratedDocs((prev) => prev.filter((d) => d.id !== id))
+      toast.success("Document deleted")
     } catch {
       toast.error("Failed to delete document")
+      setDeleteTargetDoc(null)
+      return
     }
-    setDeletingDoc(null)
+    try {
+      await fetch(`/api/delete-cloudinary-file?publicId=${encodeURIComponent(cloudinaryPublicId)}`, {
+        method: "DELETE",
+      })
+    } catch {
+      console.warn("Failed to delete file from Cloudinary")
+    }
+    setDeleteTargetDoc(null)
   }
 
   const handleDownloadDoc = async (doc: GeneratedDocument) => {
@@ -431,9 +439,9 @@ export default function DocumentsPage() {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button
-            variant={deleting === t.id ? "destructive" : "ghost"}
+            variant="ghost"
             size="icon"
-            onClick={() => handleDeleteTemplate(t.id)}
+            onClick={() => setDeleteTargetTemplate(t.id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -644,9 +652,9 @@ export default function DocumentsPage() {
                           <Download className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant={deletingDoc === doc.id ? "destructive" : "ghost"}
+                          variant="ghost"
                           size="icon"
-                          onClick={() => handleDeleteGeneratedDoc(doc.id)}
+                          onClick={() => setDeleteTargetDoc({ id: doc.id, cloudinaryPublicId: doc.cloudinaryPublicId })}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -799,6 +807,22 @@ export default function DocumentsPage() {
           </div>
         </SheetContent>
       </Sheet>
+
+      <ConfirmDialog
+        open={deleteTargetTemplate !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTargetTemplate(null) }}
+        title="Delete Template"
+        message="Are you sure you want to delete this template? This action cannot be undone."
+        onConfirm={() => deleteTargetTemplate && handleDeleteTemplate(deleteTargetTemplate)}
+      />
+
+      <ConfirmDialog
+        open={deleteTargetDoc !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTargetDoc(null) }}
+        title="Delete Document"
+        message="Are you sure you want to delete this document? This action cannot be undone."
+        onConfirm={() => deleteTargetDoc && handleDeleteGeneratedDoc(deleteTargetDoc.id, deleteTargetDoc.cloudinaryPublicId)}
+      />
     </div>
   )
 }

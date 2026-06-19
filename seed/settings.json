@@ -1,0 +1,72 @@
+[
+  {
+    "id": "BSKCZ8vyS7eIkxyGvV9s",
+    "phone": "+1 234 567 8900",
+    "primaryColor": "#1e3a5f",
+    "secondaryColor": "#2563eb",
+    "bodyColor": "#1e293b",
+    "mutedColor": "#64748b",
+    "watermarkEnabled": true,
+    "showPageNumbers": true,
+    "marginTop": 80,
+    "marginBottom": 60,
+    "marginLeft": 40,
+    "marginRight": 40,
+    "bodyFontSize": 10,
+    "titleFontSize": 16,
+    "watermarkOpacity": 0.04,
+    "createdAt": {
+      "_seconds": 1781509360,
+      "_nanoseconds": 637000000
+    },
+    "logoPublicId": "company-logo/logo_1781509535277",
+    "companyName": "JOY RESEARCH AND TECHNOLOGY SERVICES PRIVATE LIMITED",
+    "logoUrl": "https://res.cloudinary.com/dandgvspl/image/upload/v1781509535/company-logo/logo_1781509535277.png",
+    "email": "noreply@joyinfinity.com",
+    "website": "www.joybps.com",
+    "address": "357/4A, Kundrathur Main Rd, Near E.B. Office, Ramanatheshwara Nagar, Porur, Chennai, Tamil Nadu 600116, India",
+    "footerText": "",
+    "signaturePublicId": "company-signature/signature_1781513650748",
+    "signatureUrl": "https://res.cloudinary.com/dandgvspl/image/upload/v1781513651/company-signature/signature_1781513650748.png",
+    "updatedAt": {
+      "_seconds": 1781513663,
+      "_nanoseconds": 461000000
+    }
+  },
+  {
+    "id": "cjvkV9cShKoZtOqOYXtf",
+    "address": "123 Business Street, City, State - 123456",
+    "phone": "+1 234 567 8900",
+    "email": "info@company.com",
+    "website": "www.company.com",
+    "primaryColor": "#1e3a5f",
+    "secondaryColor": "#2563eb",
+    "bodyColor": "#1e293b",
+    "mutedColor": "#64748b",
+    "watermarkEnabled": true,
+    "showPageNumbers": true,
+    "marginTop": 80,
+    "marginBottom": 60,
+    "marginLeft": 40,
+    "marginRight": 40,
+    "bodyFontSize": 10,
+    "titleFontSize": 16,
+    "watermarkOpacity": 0.04,
+    "createdAt": {
+      "_seconds": 1781509572,
+      "_nanoseconds": 109000000
+    },
+    "logoPublicId": "company-logo/logo_1781510386790",
+    "companyName": "JOY RESEARCH AND TECHNOLOGY SERVICES PRIVATE LIMITED",
+    "logoUrl": "https://res.cloudinary.com/dandgvspl/image/upload/v1781510387/company-logo/logo_1781510386790.png",
+    "signaturePublicId": "company-signature/signature_1781515429533",
+    "signatureUrl": "https://res.cloudinary.com/dandgvspl/image/upload/v1781515430/company-signature/signature_1781515429533.png",
+    "gstNumber": "",
+    "footerText": "",
+    "registrationNumber": "",
+    "updatedAt": {
+      "_seconds": 1781517173,
+      "_nanoseconds": 272000000
+    }
+  }
+]

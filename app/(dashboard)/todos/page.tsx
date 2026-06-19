@@ -9,10 +9,11 @@ import { getTodos, deleteTodo, toggleTodo } from "@/services/todos"
 import type { Todo } from "@/lib/types"
 import { toast } from "sonner"
 import { format } from "date-fns"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 export default function TodosPage() {
   const [todos, setTodos] = useState<Todo[]>([])
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -23,13 +24,12 @@ export default function TodosPage() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    if (deleting !== id) { setDeleting(id); return }
     try {
       await deleteTodo(id)
       toast.success("Task deleted")
       setTodos((prev) => prev.filter((t) => t.id !== id))
     } catch { toast.error("Failed to delete") }
-    setDeleting(null)
+    setDeleteTarget(null)
   }
 
   const handleToggle = async (todo: Todo) => {
@@ -83,9 +83,9 @@ export default function TodosPage() {
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
-                      variant={deleting === todo.id ? "destructive" : "ghost"}
+                      variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(todo.id)}
+                      onClick={() => setDeleteTarget(todo.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -96,6 +96,14 @@ export default function TodosPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
+        title="Delete Task"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
+      />
     </div>
   )
 }
